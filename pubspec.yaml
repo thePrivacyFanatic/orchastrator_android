@@ -1,0 +1,22 @@
+name: orchastrator
+description: An app aiming to help coordinate people.
+publish_to: none
+version: 1.0.0+1
+environment:
+  sdk: ">=3.2.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.5
+  shared_preferences: ^2.5.3
+  dio: ^5.5.0+1
+  collection: ^1.19.1
+  string_validator: ^1.2.0
+  smart_stepper: ^0.0.7
+  mobile_scanner: ^7.1.4
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  uses-material-design: true
