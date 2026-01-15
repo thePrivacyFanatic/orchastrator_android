@@ -15,7 +15,7 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
   int _index = 0;
   int _maxStep = 1;
 
-  late List<Step> steps = <Step>[
+  late final List<Step> _steps = <Step>[
     Step(
       title: Text("instance"),
       state: (_index == 0) ? StepState.editing : StepState.complete,
@@ -45,7 +45,7 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
         children: [
           SmartStepper(
             currentStep: _index + 1,
-            totalSteps: steps.length,
+            totalSteps: _steps.length,
             onStepperTap: (int p1) {
               if (p1 <= _maxStep) {
                 setState(() {
@@ -58,7 +58,7 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
           ),
           IndexedStack(
             index: _index,
-            children: steps.map((s) {
+            children: _steps.map((s) {
               return s.content;
             }).toList(),
           ),
@@ -85,8 +85,8 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
   }
 
   void advance() {
-    if (_index < steps.length) {
-      if ((steps.elementAt(_index).content.key as GlobalKey<FormState>)
+    if (_index < _steps.length) {
+      if ((_steps.elementAt(_index).content.key as GlobalKey<FormState>)
           .currentState!
           .validate()) {
         setState(() {
