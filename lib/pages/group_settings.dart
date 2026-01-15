@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class InstanceSettings extends StatelessWidget {
-  const InstanceSettings({super.key});
+class GroupSettings extends StatelessWidget {
+  const GroupSettings({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +53,8 @@ class InstanceSettings extends StatelessWidget {
                     Icons.language,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  title: const Text('Language'),
-                  subtitle: const Text('English (US)'),
+                  title: const Text('Lorem'),
+                  subtitle: const Text('Impsum'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {},
                 ),
@@ -64,8 +64,8 @@ class InstanceSettings extends StatelessWidget {
                     Icons.info,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  title: const Text('About'),
-                  subtitle: const Text('App version 1.0.0'),
+                  title: const Text('Dolor'),
+                  subtitle: const Text('Sit amet'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {},
                 ),

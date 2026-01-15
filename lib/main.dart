@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:orchastrator/globals/app_state.dart';
 import 'package:orchastrator/pages/home_page.dart';
-import 'package:orchastrator/pages/instance_page.dart';
+import 'package:orchastrator/pages/group_page.dart';
 
 late final SharedPreferences sharedPrefs;
 
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         initialRoute: 'HomePage',
         routes: {
           'HomePage': (context) => const HomePage(),
-          'EmptyPage': (context) => const InstancePage(),
+          'EmptyPage': (context) => const GroupPage(),
         },
       ),
     );
