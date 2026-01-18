@@ -30,12 +30,14 @@ class GroupPage extends StatelessWidget {
         ],
       ),
       body: ListView.builder(
-        itemBuilder: (context, index) => Padding(padding: EdgeInsetsGeometry.symmetric(vertical: 5, horizontal: 10), child: Card.filled(
-          color: Theme.of(context).highlightColor,
-          child: SizedBox(
-              height: 500,
-              child: Center(child: Text('automation $index'))),
-        ),),
+        itemBuilder: (context, index) => Padding(
+          padding: EdgeInsetsGeometry.symmetric(vertical: 5, horizontal: 10),
+          child: Card.filled(
+            color: Theme.of(context).highlightColor,
+            child: SizedBox(
+                height: 500, child: Center(child: Text('automation $index'))),
+          ),
+        ),
         itemCount: 5,
       ),
     );

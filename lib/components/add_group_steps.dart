@@ -114,8 +114,7 @@ class _KeyFormState extends State<KeyForm> {
             _scanning = false;
             _scannerController.stop();
           });
-        }
-        else {
+        } else {
           Navigator.pop(context);
         }
       },

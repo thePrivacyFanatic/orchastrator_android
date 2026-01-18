@@ -13,9 +13,9 @@ class GroupSettings extends StatelessWidget {
           Text(
             'Notifications',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           SizedBox(
             width: 300,
@@ -34,12 +34,13 @@ class GroupSettings extends StatelessWidget {
           SizedBox(
             width: 361,
             height: 8,
-            child: Card( child: Text(
+            child: Card(
+              child: Text(
                 'General',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
           ),

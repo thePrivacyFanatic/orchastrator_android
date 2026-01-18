@@ -17,9 +17,9 @@ class AppSettings extends StatelessWidget {
           Text(
             'Appearance',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
           Card(
@@ -90,7 +90,9 @@ class AppSettings extends StatelessWidget {
                   subtitle: const Text('AMOLED pure black backgrounds'),
                   trailing: Switch(
                     value: usePureBlack,
-                    onChanged: (value) {appState.setPureBlack(value);},
+                    onChanged: (value) {
+                      appState.setPureBlack(value);
+                    },
                   ),
                 ),
               ],
@@ -100,9 +102,9 @@ class AppSettings extends StatelessWidget {
           Text(
             'General',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
           Card(
