@@ -1,16 +1,6 @@
 # orchastrator
-
-if this dosent work ill open a fucking issue
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+as orderly as a swiss watch
+### an app trying to distill human collaboration.
+the app allows the creation of groups and the different methods of communicating in them,  
+from a simple chat to a tally wager to a station tracker, this modular app will either have it,  
+or make programming it easy
