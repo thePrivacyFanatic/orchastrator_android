@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:orchastrator/classes/group_details.dart';
 import 'package:string_validator/string_validator.dart';
 import "package:mobile_scanner/mobile_scanner.dart";
 import 'dart:io';
@@ -7,6 +8,26 @@ class KeyedForm extends Form {
   KeyedForm({GlobalKey<FormState>? key, required super.child})
       : super(key: key ?? GlobalKey<FormState>());
 }
+
+class GroupDetailsConstructor {
+  late int gid;
+  late String displayName;
+  late Uri relayURL;
+  late String username;
+  late String password;
+  late String aesKey;
+
+  GroupDetails construct() => GroupDetails(
+      gid: gid,
+      displayName: displayName,
+      relayURL: relayURL,
+      username: username,
+      password: password,
+      aesKey: aesKey
+  );
+}
+
+final constructor = GroupDetailsConstructor();
 
 KeyedForm groupForm = KeyedForm(
   child: Column(
@@ -29,13 +50,14 @@ KeyedForm groupForm = KeyedForm(
           }
           return null;
         },
+        onSaved: (val) {constructor.relayURL = val as Uri;},
       ),
       SizedBox(
         height: 16,
       ),
       TextFormField(
         decoration: const InputDecoration(
-          labelText: 'Group key',
+          labelText: 'Group id',
           border: OutlineInputBorder(),
         ),
         keyboardType: TextInputType.visiblePassword,
@@ -49,6 +71,7 @@ KeyedForm groupForm = KeyedForm(
           }
           return null;
         },
+        onSaved: (val) {constructor.gid = val! as int;},
       )
     ],
   ),
@@ -70,6 +93,7 @@ KeyedForm accountForm = KeyedForm(
           }
           return null;
         },
+        onSaved: (val) {constructor.username = val!;},
       ),
       SizedBox(
         height: 16,
@@ -87,6 +111,41 @@ class PasswordFormField extends StatefulWidget {
     return _PasswordFieldState();
   }
 }
+
+class _PasswordFieldState extends State<PasswordFormField> {
+  bool _passwordVisible = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(
+          labelText: 'Password',
+          border: const OutlineInputBorder(),
+          suffixIcon: IconButton(
+            icon: Icon(
+                _passwordVisible ? Icons.visibility : Icons.visibility_off),
+            onPressed: () {
+              setState(() {
+                _passwordVisible = !_passwordVisible;
+              });
+            },
+          )),
+      keyboardType: TextInputType.visiblePassword,
+      obscureText: !_passwordVisible,
+      enableSuggestions: false,
+      autocorrect: false,
+      textInputAction: TextInputAction.next,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Field is required';
+        }
+        return null;
+      },
+      onSaved: (val) {constructor.password = val!;},
+    );
+  }
+}
+
 
 KeyedForm keyForm = KeyedForm(child: KeyForm());
 
@@ -123,9 +182,11 @@ class _KeyFormState extends State<KeyForm> {
           children: [
             TextFormField(
                 decoration: InputDecoration(
-              labelText: 'group name',
+              labelText: 'display name',
               border: const OutlineInputBorder(),
-            )),
+            ),
+              onSaved: (val) {constructor.displayName = val!;},
+            ),
             SizedBox(
               height: 16,
             ),
@@ -158,6 +219,7 @@ class _KeyFormState extends State<KeyForm> {
                 }
                 return null;
               },
+              onSaved: (val) {constructor.aesKey = val!;},
             ),
             const Text(
                 "you need to scan a data matrix provided by another user of "
@@ -190,35 +252,3 @@ class _KeyFormState extends State<KeyForm> {
   }
 }
 
-class _PasswordFieldState extends State<PasswordFormField> {
-  bool _passwordVisible = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(
-          labelText: 'Password',
-          border: const OutlineInputBorder(),
-          suffixIcon: IconButton(
-            icon: Icon(
-                _passwordVisible ? Icons.visibility : Icons.visibility_off),
-            onPressed: () {
-              setState(() {
-                _passwordVisible = !_passwordVisible;
-              });
-            },
-          )),
-      keyboardType: TextInputType.visiblePassword,
-      obscureText: !_passwordVisible,
-      enableSuggestions: false,
-      autocorrect: false,
-      textInputAction: TextInputAction.next,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Field is required';
-        }
-        return null;
-      },
-    );
-  }
-}

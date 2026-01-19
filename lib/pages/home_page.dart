@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:orchastrator/pages/app_settings.dart';
-import 'package:orchastrator/pages/group_page.dart';
 import 'package:orchastrator/components/add_group_dialog.dart';
+import 'package:orchastrator/components/group_list.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -28,30 +28,7 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: 3,
-        itemBuilder: (context, index) => Card.outlined(
-          child: ListTile(
-            leading: Text(
-              'group@relay',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            title: Text(
-              'Username',
-              textAlign: TextAlign.end,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            trailing: IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const GroupPage(),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
+      body:  GroupList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showDialog(

@@ -365,7 +365,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "2caedaa09b5249f42b6689de796c0add1ee8e553"
+      resolved-ref: d5ee8db8d4276daa29b4986f1a566051b62af0c3
       url: "https://github.com/thePrivacyFanatic/orchastrator_sdk.git"
     source: git
     version: "0.0.1"
@@ -378,7 +378,7 @@ packages:
     source: hosted
     version: "2.2.0"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: "75cca69d1490965be98c73ceaea117e8a04dd21217b37b292c9ddbec0d955bc5"

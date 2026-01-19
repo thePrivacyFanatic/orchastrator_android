@@ -7,14 +7,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.1.5
-  shared_preferences: ^2.5.3
-  dio: ^5.5.0+1
-  collection: ^1.19.1
-  string_validator: ^1.2.0
-  smart_stepper: ^0.0.7
-  mobile_scanner: ^7.1.4
-  flutter_eval: ^0.8.2
+  provider:
+  shared_preferences:
+  dio:
+  path:
+  collection:
+  string_validator:
+  smart_stepper:
+  mobile_scanner:
+  flutter_eval:
   orchastrator_sdk:
     git: https://github.com/thePrivacyFanatic/orchastrator_sdk.git
 dev_dependencies:
