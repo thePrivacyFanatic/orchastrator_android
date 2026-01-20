@@ -1,38 +1,43 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_eval/flutter_eval.dart';
 import 'package:orchastrator_sdk/orchastrator_sdk.dart';
-import 'package:path/path.dart';
 
 class ObjectiveLoader extends StatelessWidget {
-  final Directory data;
+  final Uri path;
   final Function(String message) send;
-  final String savedState;
   const ObjectiveLoader(
       {super.key,
-      required this.data,
-      required this.send,
-      required this.savedState});
+      required this.path,
+      required this.send,});
 
   @override
   Widget build(BuildContext context) {
+    StreamController<Signal> state = StreamController();
+    final stateFile = File("$path${Platform.pathSeparator}savedState.txt");
+    stateFile.readAsLines().then((lines) {
+      for (var line in lines) {
+        state.add(Signal.fromJson(jsonDecode(line)));
+      }
+      state.stream.listen((signal) {
+        stateFile.writeAsStringSync(jsonEncode(signal) + Platform.lineTerminator, mode: FileMode.append);
+      });
+    });
     Widget objective;
     objective = RuntimeWidget(
-      uri: Uri.file("file://${data.uri}/objective.evc"),
+      uri: Uri.file("file://$path${Platform.pathSeparator}objective.evc"),
       library: "package:objective/objective.dart",
       function: "Objective",
+      args: [state],
       onError: _errorWidgetBuilder,
       loading: CircularProgressIndicator(
         semanticsLabel: "Loading objective...",
       ),
     );
-    if (objective is Channel) {
-      (objective as Channel).init(savedState, (String transaction) {
-        send(jsonEncode({"oid": basename(data.path), "content": transaction}));
-      });
-    } else {
+    if (objective is! ObjectiveWidget) {
       objective = _errorWidgetBuilder(
           context,
           FormatException("Widget doesn't implement the Channel interface"),

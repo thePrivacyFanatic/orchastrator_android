@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:orchastrator/classes/group_details.dart';
-
+import 'package:path_provider/path_provider.dart';
 import '../pages/group_page.dart';
 
 class GroupList extends StatelessWidget {
@@ -11,24 +11,26 @@ class GroupList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        for (var group in Directory("").listSync())
-          if (group is Directory) _fromFSEntity(group),
-      ],
-    );
+    return FutureBuilder(
+        future: getApplicationDocumentsDirectory(),
+        builder: (context, docDir) {
+          var groupDir = Directory("${docDir.data!.uri}${Platform.pathSeparator}groups");
+          return ListView(children: [
+            for (var group in groupDir.listSync())
+              if (group is Directory)
+                _GroupItem(dir: group)
+          ]);
+        });
   }
 }
 
-_GroupItem _fromFSEntity(FileSystemEntity dir) {
-  GroupDetails details = GroupDetails.fromJson(
-      jsonDecode(File("${dir.path}/details.json").readAsStringSync()));
-  return _GroupItem(details: details);
-}
-
 class _GroupItem extends StatelessWidget {
-  final GroupDetails details;
-  const _GroupItem({required this.details});
+  final Directory dir;
+  _GroupItem({required this.dir}) {
+    details = GroupDetails.fromJson(jsonDecode(
+        File("${dir.path}${Platform.pathSeparator}details.json").readAsStringSync()));
+  }
+  late final GroupDetails details;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,7 @@ class _GroupItem extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => GroupPage(details: details),
+              builder: (context) => GroupPage(details: details, groupDir: dir.path,),
             ),
           );
         },

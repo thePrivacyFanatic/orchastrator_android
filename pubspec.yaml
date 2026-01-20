@@ -9,8 +9,8 @@ dependencies:
     sdk: flutter
   provider:
   shared_preferences:
-  dio:
   path:
+  path_provider:
   collection:
   string_validator:
   smart_stepper:
