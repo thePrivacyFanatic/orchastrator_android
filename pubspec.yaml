@@ -15,7 +15,11 @@ dependencies:
   string_validator:
   smart_stepper:
   mobile_scanner:
-  rfw: ^1.1.0
+  async: ^2.13.0
+  flutter_eval: ^0.8.2
+  dart_eval: ^0.8.4
+  eval_annotation: ^0.8.1
+  aes_crypt_null_safe: ^3.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

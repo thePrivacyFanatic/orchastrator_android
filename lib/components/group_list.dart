@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:orchastrator/classes/group_details.dart';
 import 'package:path_provider/path_provider.dart';
+
 import '../pages/group_page.dart';
 
 class GroupList extends StatelessWidget {
@@ -14,11 +15,13 @@ class GroupList extends StatelessWidget {
     return FutureBuilder(
         future: getApplicationDocumentsDirectory(),
         builder: (context, docDir) {
-          var groupDir = Directory("${docDir.data!.uri}${Platform.pathSeparator}groups");
+          if (docDir.data == null) return Center(child: CircularProgressIndicator());
+          var groupDir =
+              Directory("${docDir.data!.path}${Platform.pathSeparator}groups");
+          if (!groupDir.existsSync()) groupDir.create();
           return ListView(children: [
             for (var group in groupDir.listSync())
-              if (group is Directory)
-                _GroupItem(dir: group)
+              if (group is Directory) _GroupItem(dir: group)
           ]);
         });
   }
@@ -26,10 +29,13 @@ class GroupList extends StatelessWidget {
 
 class _GroupItem extends StatelessWidget {
   final Directory dir;
+
   _GroupItem({required this.dir}) {
     details = GroupDetails.fromJson(jsonDecode(
-        File("${dir.path}${Platform.pathSeparator}details.json").readAsStringSync()));
+        File("${dir.path}${Platform.pathSeparator}details.json")
+            .readAsStringSync()));
   }
+
   late final GroupDetails details;
 
   @override
@@ -49,14 +55,13 @@ class _GroupItem extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => GroupPage(details: details, groupDir: dir.path,),
-            ),
+                builder: (context) => GroupPage(
+                      details: details,
+                      groupDir: dir.path,
+                    )),
           );
         },
       ),
     );
   }
 }
-
-/*
-          (context, index) =>  */

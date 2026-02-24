@@ -1,8 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'add_group_steps.dart';
+import 'package:orchastrator/classes/group_details.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:smart_stepper/smart_stepper.dart';
+
+import 'add_group_steps.dart';
 
 class AddGroupDialog extends StatefulWidget {
   const AddGroupDialog({super.key});
@@ -14,17 +20,22 @@ class AddGroupDialog extends StatefulWidget {
 class _AddGroupDialogState extends State<AddGroupDialog> {
   int _index = 0;
   int _maxStep = 1;
+  GroupDetailsConstructor constructor = GroupDetailsConstructor();
 
   late final List<Step> _steps = <Step>[
     Step(
       title: Text("instance"),
       state: (_index == 0) ? StepState.editing : StepState.complete,
-      content: groupForm,
+      content: GroupForm(
+        constructor: constructor,
+      ),
     ),
     Step(
       title: Text("account"),
       state: (_index == 2) ? StepState.editing : StepState.indexed,
-      content: accountForm,
+      content: AccountForm(
+        constructor: constructor,
+      ),
     ),
     Step(
         title: Text("Key"),
@@ -33,7 +44,9 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
             : (_index == 1)
                 ? StepState.editing
                 : StepState.complete,
-        content: keyForm),
+        content: KeyForm(
+          constructor: constructor,
+        )),
   ];
 
   @override
@@ -47,12 +60,14 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
             currentStep: _index + 1,
             totalSteps: _steps.length,
             onStepperTap: (int p1) {
-              if (p1 <= _maxStep) {
+              bool a = true;
+              for (var s in _steps.slice(0, p1 - 1)) {
+                if (!(s.content as FormContainer).validate()) a = false;
+              }
+              if (a) {
                 setState(() {
                   _index = p1 - 1;
                 });
-              } else if (p1 == _maxStep + 1) {
-                advance();
               }
             },
           ),
@@ -85,15 +100,27 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
   }
 
   void advance() {
-    if (_index < _steps.length) {
-      if ((_steps.elementAt(_index).content.key as GlobalKey<FormState>)
-          .currentState!
-          .validate()) {
+    if (((_steps.elementAt(_index).content as FormContainer).validate())) {
+      if (_index < _steps.length - 1) {
         setState(() {
           _index += 1;
         });
         _maxStep = max(_maxStep, _index + 1);
+      } else {
+        addGroup(constructor.construct());
+        Navigator.pop(context);
       }
     }
   }
+}
+
+Future<void> addGroup(GroupDetails details) async {
+  var dir = Directory(
+      "${(await getApplicationDocumentsDirectory()).path}${Platform.pathSeparator}groups${Platform.pathSeparator}${details.displayName}");
+  if (await dir.exists()) {
+    throw Exception("there's already a group by that name");
+  }
+  await dir.create();
+  await File("${dir.path}${Platform.pathSeparator}details.json").writeAsString(jsonEncode(details.toJson()));
+  await File("${dir.path}${Platform.pathSeparator}users.json").writeAsString(jsonEncode(List.empty()));
 }

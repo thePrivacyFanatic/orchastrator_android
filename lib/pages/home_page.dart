@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:orchastrator/pages/app_settings.dart';
 import 'package:orchastrator/components/add_group_dialog.dart';
 import 'package:orchastrator/components/group_list.dart';
+import 'package:orchastrator/pages/app_settings.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body:  GroupList(),
+      body: GroupList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showDialog(
