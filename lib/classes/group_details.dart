@@ -2,7 +2,7 @@
 
 class GroupDetails {
   final int gid;
-  final String displayName;
+  String displayName;
   final String relayURL;
   final String username;
   final String password;
@@ -36,4 +36,33 @@ class GroupDetails {
         "AESKey": aesKey,
         "lastSid": lastSid
       };
+}
+
+class GroupDetailsConstructor {
+  int? gid;
+  String? displayName;
+  String? relayURL;
+  String? username;
+  String? password;
+  String? aesKey;
+
+  GroupDetails construct() => GroupDetails(
+      gid: gid!,
+      displayName: displayName!,
+      relayURL: Uri(scheme: "wss", host: Uri.parse(relayURL!).host).toString(),
+      username: username!,
+      password: password!,
+      aesKey: aesKey!,
+      lastSid: 0);
+
+
+  GroupDetailsConstructor.empty();
+
+  GroupDetailsConstructor.edit(GroupDetails oldDetails) :
+        gid = oldDetails.gid,
+        displayName = oldDetails.displayName,
+        relayURL = oldDetails.relayURL,
+        username = oldDetails.username,
+        password = oldDetails.password,
+        aesKey = oldDetails.aesKey;
 }

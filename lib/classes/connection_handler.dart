@@ -10,8 +10,8 @@ import 'package:orchastrator/classes/login.dart';
 class ConnectionHandler {
   final WebSocket _connection;
   late final AesCrypt _crypt;
-  final StreamController<Message> _internalsController = StreamController();
-  late final Stream<Message> internals = _internalsController.stream;
+  final StreamController<Message> _receivedController = StreamController(sync: true);
+  late final Stream<Message> received = _receivedController.stream;
 
   ConnectionHandler._(String secretKey, {required WebSocket connection})
       : _connection = connection {
@@ -29,11 +29,11 @@ class ConnectionHandler {
   Future<void> sortMessages(dynamic received) async {
     var message = Message.fromJson(jsonDecode(received as String));
     if (message.mtype == 1) {
-      _internalsController.add(message);
+      _receivedController.add(message);
     } else if (message.mtype == 0) {
       message.content =
           utf8.decode(_crypt.aesEncrypt(utf8.encode(message.content)));
-      _internalsController.add(message);
+      _receivedController.add(message);
     }
   }
   void send(String message) {

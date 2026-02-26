@@ -15,14 +15,14 @@ dependencies:
   string_validator:
   smart_stepper:
   mobile_scanner:
-  async: ^2.13.0
-  flutter_eval: ^0.8.2
-  dart_eval: ^0.8.4
-  eval_annotation: ^0.8.1
-  aes_crypt_null_safe: ^3.1.1
+  async:
+  flutter_eval:
+  dart_eval:
+  eval_annotation:
+  aes_crypt_null_safe:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
+  flutter_lints:
 flutter:
   uses-material-design: true

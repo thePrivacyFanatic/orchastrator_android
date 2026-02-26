@@ -2,24 +2,31 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:orchastrator/bindings.dart';
+import 'package:orchastrator/objectives/objective.dart';
 
 
-class Objective extends StatefulWidget {
+class EventList extends StatefulWidget implements Objective{
   final ObjectiveInput input;
 
-  const Objective({super.key, required this.input});
+  const EventList({super.key, required this.input});
 
   @override
-  State<Objective> createState() => _EventListState();
+  State<EventList> createState() => _EventListState();
+
+  @override
+  Objective load(ObjectiveInput input) => EventList(input: input);
 }
 
-class _EventListState extends State<Objective> {
-  late List<Message> events;
+class _EventListState extends State<EventList> {
+  late List<Message> events = [];
 
   @override
   void initState() {
     super.initState();
-    events = jsonDecode(widget.input.state.readAsStringSync());
+    var state = widget.input.state.readAsStringSync();
+    for (var e in (jsonDecode((state.isNotEmpty) ? state : "[]") as List)) {
+      events.add(Message.fromJson(e));
+    }
     widget.input.receiver.listen((msg) {
       if (msg.mtype == 1) {
         setState(() {

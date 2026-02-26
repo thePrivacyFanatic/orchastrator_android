@@ -11,7 +11,8 @@ import 'package:smart_stepper/smart_stepper.dart';
 import 'add_group_steps.dart';
 
 class AddGroupDialog extends StatefulWidget {
-  const AddGroupDialog({super.key});
+  final GroupDetailsConstructor constructor;
+  const AddGroupDialog({super.key, required this.constructor});
 
   @override
   State<AddGroupDialog> createState() => _AddGroupDialogState();
@@ -20,21 +21,20 @@ class AddGroupDialog extends StatefulWidget {
 class _AddGroupDialogState extends State<AddGroupDialog> {
   int _index = 0;
   int _maxStep = 1;
-  GroupDetailsConstructor constructor = GroupDetailsConstructor();
 
   late final List<Step> _steps = <Step>[
     Step(
       title: Text("instance"),
       state: (_index == 0) ? StepState.editing : StepState.complete,
       content: GroupForm(
-        constructor: constructor,
+        constructor: widget.constructor,
       ),
     ),
     Step(
       title: Text("account"),
       state: (_index == 2) ? StepState.editing : StepState.indexed,
       content: AccountForm(
-        constructor: constructor,
+        constructor: widget.constructor,
       ),
     ),
     Step(
@@ -45,7 +45,7 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
                 ? StepState.editing
                 : StepState.complete,
         content: KeyForm(
-          constructor: constructor,
+          constructor: widget.constructor,
         )),
   ];
 
@@ -107,7 +107,7 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
         });
         _maxStep = max(_maxStep, _index + 1);
       } else {
-        addGroup(constructor.construct());
+        addGroup(widget.constructor.construct());
         Navigator.pop(context);
       }
     }
@@ -123,4 +123,9 @@ Future<void> addGroup(GroupDetails details) async {
   await dir.create();
   await File("${dir.path}${Platform.pathSeparator}details.json").writeAsString(jsonEncode(details.toJson()));
   await File("${dir.path}${Platform.pathSeparator}users.json").writeAsString(jsonEncode(List.empty()));
+  // non modular part, hopefully can be removed soon
+  await Directory("${dir.path}${Platform.pathSeparator}states").create();
+  for (int i = 0; i<1;i++) {
+    File("${dir.path}${Platform.pathSeparator}states${Platform.pathSeparator}$i").create(recursive: true);
+  }
 }

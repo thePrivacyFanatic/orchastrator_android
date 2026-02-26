@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_eval/flutter_eval.dart';
 import 'package:flutter_eval/security.dart';
 import 'package:orchastrator/bindings.dart';
+import 'package:orchastrator/bindings.eval.dart';
 import 'package:orchastrator/eval_plugin.dart';
 import 'package:path/path.dart';
 
@@ -34,15 +35,15 @@ class _ObjectiveContainerState extends State<ObjectiveContainer> {
     library: "package:main.dart",
     function: "Objective.create",
     args: [
-      ObjectiveInput(
+      $ObjectiveInput.wrap(ObjectiveInput(
           receiver: widget.receive,
-          send: $Closure((runtime, target, args) {
+          send: (content) {
             widget.out.add(
-                jsonEncode({"oid": basename(widget.path), "content": args[0]}));
+                jsonEncode({"oid": basename(widget.path), "content": content}));
             return null;
-          }),
+          },
           users: widget.users,
-          state: File("${widget.path}${Platform.pathSeparator}state"))
+          state: File("${widget.path}${Platform.pathSeparator}state")))
     ],
     permissions: [
       FilesystemPermission.file("${widget.path}${Platform.pathSeparator}state")

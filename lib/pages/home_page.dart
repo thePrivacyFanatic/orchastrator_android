@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:orchastrator/components/add_group_dialog.dart';
 import 'package:orchastrator/components/group_list.dart';
 import 'package:orchastrator/pages/app_settings.dart';
+import 'package:orchastrator/classes/group_details.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -33,8 +34,9 @@ class HomePage extends StatelessWidget {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (context) => const AddGroupDialog(),
-            anchorPoint: const Offset(0, 0),
+            builder: (context) => AddGroupDialog(
+              constructor: GroupDetailsConstructor.empty(),
+            ),
           );
         },
         tooltip: 'Add new group...',

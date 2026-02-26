@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class GroupSettings extends StatelessWidget {
-  const GroupSettings({super.key});
+  final int privilege;
+  const GroupSettings({super.key, required this.privilege});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class GroupSettings extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            'Notifications',
+            'this may one day be Notifications',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -31,48 +32,47 @@ class GroupSettings extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          SizedBox(
-            width: 361,
-            height: 8,
-            child: Card(
-              child: Text(
-                'General',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-            ),
-          ),
-          Card(
-            elevation: 0,
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            child: Column(
+          if (privilege < 2)
+            Column(
               children: [
-                ListTile(
-                  leading: Icon(
-                    Icons.language,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  title: const Text('Lorem'),
-                  subtitle: const Text('Impsum'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                Text(
+                  'Moderator Options',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: Icon(
-                    Icons.info,
-                    color: Theme.of(context).colorScheme.primary,
+                Card(
+                  elevation: 0,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Icon(
+                          Icons.language,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        title: const Text('Lorem'),
+                        subtitle: const Text('Impsum'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {},
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: Icon(
+                          Icons.info,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        title: const Text('Dolor'),
+                        subtitle: const Text('Sit amet'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {},
+                      ),
+                    ],
                   ),
-                  title: const Text('Dolor'),
-                  subtitle: const Text('Sit amet'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
                 ),
               ],
-            ),
-          ),
+            )
         ],
       ),
     );

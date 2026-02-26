@@ -18,23 +18,7 @@ abstract class FormContainer {
   bool validate();
 }
 
-class GroupDetailsConstructor {
-  int? gid;
-  String? displayName;
-  String? relayURL;
-  String? username;
-  String? password;
-  String? aesKey;
 
-  GroupDetails construct() => GroupDetails(
-      gid: gid!,
-      displayName: displayName!,
-      relayURL: relayURL!,
-      username: username!,
-      password: password!,
-      aesKey: aesKey!,
-      lastSid: 0);
-}
 
 class GroupForm extends StatelessWidget implements FormContainer {
   final GroupDetailsConstructor constructor;

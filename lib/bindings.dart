@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:dart_eval/dart_eval_bridge.dart';
 import 'package:eval_annotation/eval_annotation.dart';
 
-@Bind()
+
 class Message {
   String content;
   final int timestamp;
@@ -25,7 +24,7 @@ class Message {
   }
 }
 
-@Bind()
+
 class User {
   final int uid;
   final String username;
@@ -42,7 +41,7 @@ class User {
 @Bind()
 class ObjectiveInput {
   final Stream<Message> receiver;
-  final $Closure send;
+  final Function send;
   final List<User> users;
   final File state;
 
