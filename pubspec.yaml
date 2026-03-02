@@ -19,7 +19,7 @@ dependencies:
   flutter_eval:
   dart_eval:
   eval_annotation:
-  aes_crypt_null_safe:
+  aes256:
 dev_dependencies:
   flutter_test:
     sdk: flutter

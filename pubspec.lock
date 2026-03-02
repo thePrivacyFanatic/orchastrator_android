@@ -9,14 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "91.0.0"
-  aes_crypt_null_safe:
+  aes256:
     dependency: "direct main"
     description:
-      name: aes_crypt_null_safe
-      sha256: "4708a3434e394df0b4a0134def96a920b216a71b3aa88c4a8ccb10ff497cfc59"
+      name: aes256
+      sha256: cb06e0602f0f258dc40e0fa53ea5018c55e8c5ca20fb4e7552ff9370b99b430a
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.1"
+    version: "2.2.2"
   analyzer:
     dependency: transitive
     description:
@@ -113,6 +113,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  cryptography:
+    dependency: transitive
+    description:
+      name: cryptography
+      sha256: "3eda3029d34ec9095a27a198ac9785630fe525c0eb6a49f3d575272f8e792ef0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.9.0"
+  cryptography_flutter:
+    dependency: transitive
+    description:
+      name: cryptography_flutter
+      sha256: d1c7e7a31a072d63b27ce0537b89868f9bda9188f2b1651ae728a295762921d4
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.4"
   dart_eval:
     dependency: "direct main"
     description:
@@ -597,14 +613,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
-  universal_io:
-    dependency: transitive
-    description:
-      name: universal_io
-      sha256: f63cbc48103236abf48e345e07a03ce5757ea86285ed313a6a032596ed9301e2
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.1"
   vector_math:
     dependency: transitive
     description:

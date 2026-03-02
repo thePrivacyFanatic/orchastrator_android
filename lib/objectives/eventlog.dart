@@ -2,10 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:orchastrator/bindings.dart';
-import 'package:orchastrator/objectives/objective.dart';
 
 
-class EventList extends StatefulWidget implements Objective{
+class EventList extends StatefulWidget{
   final ObjectiveInput input;
 
   const EventList({super.key, required this.input});
@@ -14,7 +13,7 @@ class EventList extends StatefulWidget implements Objective{
   State<EventList> createState() => _EventListState();
 
   @override
-  Objective load(ObjectiveInput input) => EventList(input: input);
+  const EventList.load(this.input, {super.key});
 }
 
 class _EventListState extends State<EventList> {

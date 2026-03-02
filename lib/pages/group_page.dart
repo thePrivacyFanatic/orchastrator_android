@@ -9,6 +9,7 @@ import 'package:orchastrator/objectives/eventlog.dart';
 import 'package:orchastrator/pages/group_settings.dart';
 
 import '../bindings.dart';
+import '../objectives/chat.dart';
 
 class GroupPage extends StatefulWidget {
   final String groupDir;
@@ -25,26 +26,19 @@ class _GroupPageState extends State<GroupPage> {
           .readAsStringSync()));
   final Map<int, StreamController<Message>> streams = {};
   ConnectionHandler? connection;
+  // nonmodualr but will require more replacement
   final List<User> users = List<User>.empty(growable: true);
-  final StreamController<Widget> groups = StreamController();
   final List<Widget> containers = List<Widget>.empty(growable: true);
   late final int privilege;
-  late int lastSid = int.parse(File("${widget.groupDir}${Platform.pathSeparator}lastSid").readAsStringSync());
+  late int lastSid = int.parse(
+      File("${widget.groupDir}${Platform.pathSeparator}lastSid")
+          .readAsStringSync());
 
   @override
   void initState() {
     super.initState();
-    final def = ObjectiveInput(
-        receiver: Stream.empty(), send: () {}, users: [], state: File(""));
-    List objectives = [
-      EventList(
-        input: def,
-      ),
-      // Chat(input: def)
-    ];
-    for (int i = 0; i < objectives.length; i++) {
-      groups.add(objectives[i].load(_subscribe(i, users)));
-    }
+    containers.add(EventList(input: _subscribe(0, users)));
+    containers.add(Chat(input: _subscribe(1, users)));
     for (var str in (jsonDecode(
         File("${widget.groupDir}${Platform.pathSeparator}users.json")
             .readAsStringSync()) as List)) {
@@ -92,48 +86,43 @@ class _GroupPageState extends State<GroupPage> {
           future: _connect(),
           builder: (context, asyncSnapshot) {
             if (asyncSnapshot.hasError) {
-                if (asyncSnapshot.error is IOException) {
-                  return Center(child: Card(child: Column(
+              if (asyncSnapshot.error is IOException) {
+                return Center(
+                  child: Card(
+                      child: Column(
                     children: [
-                      const Text("we could not connect to the server :(",),
+                      const Text(
+                        "we could not connect to the server :(",
+                      ),
                       const Text("here is the error message:"),
                       Text(asyncSnapshot.error.toString())
                     ],
-                  )),);
-                }
-                if (asyncSnapshot.error == Exception("login fail")) {
-                  return Center(child: Text("could not log into account :("),);
-                }
-                if (asyncSnapshot.error is FlutterError) {
-                  return Center(child: ErrorWidget.withDetails(error: asyncSnapshot.error as FlutterError,),);
-                }
+                  )),
+                );
+              }
+              if (asyncSnapshot.error == Exception("login fail")) {
+                return Center(
+                  child: Text("could not log into account :("),
+                );
+              }
+              if (asyncSnapshot.error is FlutterError) {
+                return Center(
+                  child: ErrorWidget.withDetails(
+                    error: asyncSnapshot.error as FlutterError,
+                  ),
+                );
+              }
             }
             if (asyncSnapshot.connectionState == ConnectionState.done) {
-              return StreamBuilder(
-                  stream: groups.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.connectionState ==
-                        ConnectionState.done) {
-                      return Text('done');
-                    } else if (snapshot.hasError) {
-                      return Text('Error!');
-                    } else {
-                      containers.add(snapshot.data!);
-                      return ListView.builder(
-                        itemBuilder: (context, index) {
-                          return SizedBox(
-                            height: 500,
-                            child: Card(child: containers[index]),
-                          );
-                        },
-                        itemCount: containers.length,
-                      );
-                    }
-                  });
+              return ListView.builder(
+                itemBuilder: (context, index) {
+                  return SizedBox(
+                    height: 500,
+                    child: Card(child: containers[index]),
+                  );
+                },
+                itemCount: containers.length,
+              );
             }
             return Center(
               child: CircularProgressIndicator(),
@@ -205,7 +194,6 @@ class _GroupPageState extends State<GroupPage> {
       //   }
     }
   }
-
 
   @override
   void dispose() {
