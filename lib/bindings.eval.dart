@@ -82,7 +82,7 @@ class $Message implements $Instance {
           namedParams: [],
           params: [
             BridgeParameter(
-              'jsonString',
+              'json',
               BridgeTypeAnnotation(
                 BridgeTypeRef(CoreTypes.map, [
                   BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string, [])),
@@ -256,7 +256,7 @@ class $User implements $Instance {
           namedParams: [],
           params: [
             BridgeParameter(
-              'jsonString',
+              'json',
               BridgeTypeAnnotation(
                 BridgeTypeRef(CoreTypes.map, [
                   BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string, [])),

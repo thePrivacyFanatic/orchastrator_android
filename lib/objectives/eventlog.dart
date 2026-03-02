@@ -40,13 +40,13 @@ class _EventListState extends State<EventList> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: [for (var m in events) Text(m.toString())],
+      children: [for (var m in events) Card(child: Text(m.toString()))],
     );
   }
 
   @override
   void dispose() {
     super.dispose();
-    widget.input.state.writeAsStringSync(jsonEncode(events));
+    widget.input.state.writeAsString(jsonEncode(events));
   }
 }

@@ -11,22 +11,25 @@ import 'package:orchastrator/pages/group_settings.dart';
 import '../bindings.dart';
 
 class GroupPage extends StatefulWidget {
-  final GroupDetails details;
   final String groupDir;
 
-  const GroupPage({super.key, required this.details, required this.groupDir});
+  const GroupPage({super.key, required this.groupDir});
 
   @override
   State<GroupPage> createState() => _GroupPageState();
 }
 
 class _GroupPageState extends State<GroupPage> {
+  late final details = GroupDetails.fromJson(jsonDecode(
+      File("${widget.groupDir}${Platform.pathSeparator}details.json")
+          .readAsStringSync()));
   final Map<int, StreamController<Message>> streams = {};
-  late final ConnectionHandler connection;
-  final List<User> users = List<User>.empty();
+  ConnectionHandler? connection;
+  final List<User> users = List<User>.empty(growable: true);
   final StreamController<Widget> groups = StreamController();
-  List<Widget> containers = List<Widget>.empty(growable: true);
+  final List<Widget> containers = List<Widget>.empty(growable: true);
   late final int privilege;
+  late int lastSid = int.parse(File("${widget.groupDir}${Platform.pathSeparator}lastSid").readAsStringSync());
 
   @override
   void initState() {
@@ -36,7 +39,8 @@ class _GroupPageState extends State<GroupPage> {
     List objectives = [
       EventList(
         input: def,
-      )
+      ),
+      // Chat(input: def)
     ];
     for (int i = 0; i < objectives.length; i++) {
       groups.add(objectives[i].load(_subscribe(i, users)));
@@ -46,22 +50,22 @@ class _GroupPageState extends State<GroupPage> {
             .readAsStringSync()) as List)) {
       var user = User.fromJson(str);
       users.add(user);
-      if (user.username == widget.details.username) {
+      if (user.name == details.username) {
         privilege = user.privilege;
       }
     }
   }
 
   Future<void> _connect() async {
-    connection = await ConnectionHandler.fromGroup(widget.details);
-    connection.received.listen(_receive);
+    connection = await ConnectionHandler.fromGroup(details, lastSid);
+    connection!.received.listen(_receive);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.details.displayName),
+        title: Text(details.displayName),
         actions: [
           SizedBox(
             child: IconButton(
@@ -89,7 +93,16 @@ class _GroupPageState extends State<GroupPage> {
           builder: (context, asyncSnapshot) {
             if (asyncSnapshot.hasError) {
                 if (asyncSnapshot.error is IOException) {
-                  return Center(child: Text("we could not connect to the server :("),);
+                  return Center(child: Card(child: Column(
+                    children: [
+                      const Text("we could not connect to the server :(",),
+                      const Text("here is the error message:"),
+                      Text(asyncSnapshot.error.toString())
+                    ],
+                  )),);
+                }
+                if (asyncSnapshot.error == Exception("login fail")) {
+                  return Center(child: Text("could not log into account :("),);
                 }
                 if (asyncSnapshot.error is FlutterError) {
                   return Center(child: ErrorWidget.withDetails(error: asyncSnapshot.error as FlutterError,),);
@@ -130,6 +143,7 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   void _receive(Message message) {
+    lastSid++;
     if (message.mtype == 0) {
       var newContent = jsonDecode(message.content);
       message.content = newContent["content"];
@@ -144,7 +158,7 @@ class _GroupPageState extends State<GroupPage> {
     streams[oid] = receiver;
     StreamController<String> controller = StreamController();
     controller.stream.listen((message) {
-      connection.send(jsonEncode({"oid": oid, "content": message}));
+      connection!.send(jsonEncode({"oid": oid, "content": message}));
     });
     return ObjectiveInput(
         receiver: receiver.stream,
@@ -166,8 +180,12 @@ class _GroupPageState extends State<GroupPage> {
     var content = jsonDecode(message.content);
     switch (content["type"]) {
       case ("user addition"):
-        users.add(User.fromJson(content["user"]));
+        var user = User.fromJson(content["user"]);
+        users.add(user);
         broadcast(message);
+        if (user.name == details.username) {
+          privilege = user.privilege;
+        }
       case ("perm"):
         users.firstWhere((user) {
           return user.uid == content["uid"];
@@ -188,10 +206,18 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
+
   @override
   void dispose() {
+    if (connection != null) {
+      connection!.close();
+    }
     super.dispose();
     File("${widget.groupDir}${Platform.pathSeparator}users.json")
-        .writeAsStringSync(jsonEncode(users));
+        .writeAsString(jsonEncode(users));
+    File("${widget.groupDir}${Platform.pathSeparator}details.json")
+        .writeAsString(jsonEncode(details));
+    File("${widget.groupDir}${Platform.pathSeparator}lastSid")
+        .writeAsString(lastSid.toString());
   }
 }
