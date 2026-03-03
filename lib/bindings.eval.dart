@@ -52,19 +52,16 @@ class $Message implements $Instance {
               BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string, [])),
               false,
             ),
-
             BridgeParameter(
               'timestamp',
               BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int, [])),
               false,
             ),
-
             BridgeParameter(
               'sender',
               BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int, [])),
               false,
             ),
-
             BridgeParameter(
               'mtype',
               BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int, [])),
@@ -75,7 +72,6 @@ class $Message implements $Instance {
         ),
         isFactory: false,
       ),
-
       'fromJson': BridgeConstructorDef(
         BridgeFunctionDef(
           returns: BridgeTypeAnnotation($type),
@@ -96,7 +92,6 @@ class $Message implements $Instance {
         isFactory: false,
       ),
     },
-
     methods: {},
     getters: {},
     setters: {},
@@ -105,17 +100,14 @@ class $Message implements $Instance {
         BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string, [])),
         isStatic: false,
       ),
-
       'timestamp': BridgeFieldDef(
         BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int, [])),
         isStatic: false,
       ),
-
       'sender': BridgeFieldDef(
         BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int, [])),
         isStatic: false,
       ),
-
       'mtype': BridgeFieldDef(
         BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int, [])),
         isStatic: false,
@@ -232,13 +224,11 @@ class $User implements $Instance {
               BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int, [])),
               false,
             ),
-
             BridgeParameter(
               'username',
               BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string, [])),
               false,
             ),
-
             BridgeParameter(
               'privilege',
               BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int, [])),
@@ -249,7 +239,6 @@ class $User implements $Instance {
         ),
         isFactory: false,
       ),
-
       'fromJson': BridgeConstructorDef(
         BridgeFunctionDef(
           returns: BridgeTypeAnnotation($type),
@@ -270,7 +259,6 @@ class $User implements $Instance {
         isFactory: false,
       ),
     },
-
     methods: {},
     getters: {},
     setters: {},
@@ -279,12 +267,10 @@ class $User implements $Instance {
         BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int, [])),
         isStatic: false,
       ),
-
       'username': BridgeFieldDef(
         BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.string, [])),
         isStatic: false,
       ),
-
       'privilege': BridgeFieldDef(
         BridgeTypeAnnotation(BridgeTypeRef(CoreTypes.int, [])),
         isStatic: false,
@@ -397,7 +383,6 @@ class $ObjectiveInput implements $Instance {
               ),
               false,
             ),
-
             BridgeParameter(
               'send',
               BridgeTypeAnnotation(
@@ -411,7 +396,6 @@ class $ObjectiveInput implements $Instance {
               ),
               false,
             ),
-
             BridgeParameter(
               'users',
               BridgeTypeAnnotation(
@@ -429,7 +413,6 @@ class $ObjectiveInput implements $Instance {
               ),
               false,
             ),
-
             BridgeParameter(
               'state',
               BridgeTypeAnnotation(BridgeTypeRef(IoTypes.file, [])),
@@ -441,7 +424,6 @@ class $ObjectiveInput implements $Instance {
         isFactory: false,
       ),
     },
-
     methods: {},
     getters: {},
     setters: {},
@@ -459,7 +441,6 @@ class $ObjectiveInput implements $Instance {
         ),
         isStatic: false,
       ),
-
       'send': BridgeFieldDef(
         BridgeTypeAnnotation(
           BridgeTypeRef(
@@ -472,7 +453,6 @@ class $ObjectiveInput implements $Instance {
         ),
         isStatic: false,
       ),
-
       'users': BridgeFieldDef(
         BridgeTypeAnnotation(
           BridgeTypeRef(CoreTypes.list, [
@@ -486,7 +466,6 @@ class $ObjectiveInput implements $Instance {
         ),
         isStatic: false,
       ),
-
       'state': BridgeFieldDef(
         BridgeTypeAnnotation(BridgeTypeRef(IoTypes.file, [])),
         isStatic: false,

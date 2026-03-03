@@ -13,17 +13,34 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   final List<ChatMessage> messages = [];
-  final TextEditingController controller = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  String? lastSent;
 
   @override
   void initState() {
     super.initState();
-    var statefile = widget.input.state.readAsStringSync();
-    for (var m in jsonDecode((statefile.isNotEmpty) ? statefile : "[]")) {
-      messages.add(ChatMessage(message: Message.fromJson(m)));
-    }
-    widget.input.receiver
-        .listen((message) => setState(() => messages.add(ChatMessage(message: message))));
+    var stateFile = widget.input.state.readAsStringSync();
+    messages.addAll(
+        (jsonDecode((stateFile.isNotEmpty) ? stateFile : "[]") as List)
+            .map((m) => ChatMessage(message: Message.fromJson(m))));
+    widget.input.receiver.listen((message) {
+      var msgWidget = ChatMessage(message: message);
+      setState(() => messages.add(msgWidget));
+      if (_scrollController.position.extentAfter < 200) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: Duration(milliseconds: 80),
+              curve: Curves.linear);
+        });
+      }
+      if (message.content == lastSent) {
+        setState(() {
+          lastSent = null;
+        });
+      }
+    });
   }
 
   @override
@@ -32,26 +49,38 @@ class _ChatState extends State<Chat> {
       children: [
         Expanded(
             child: ListView.builder(
-              itemBuilder: (context, index) => messages[index],
-              itemCount: messages.length,
-            )),
-        SizedBox(
-          height: 50,
-          child: Row(
-            children: [
-              IconButton(
-                  onPressed: () {
-                    widget.input.send(controller.text);
-                  },
-                  icon: Icon(Icons.send)),
-              Expanded(
-                child: TextField(
-                  controller: controller,
+          controller: _scrollController,
+          itemBuilder: (context, index) => messages[index],
+          itemCount: messages.length,
+        )),
+        if (widget.input.privilege >= Privilege.publisher)
+          SizedBox(
+            height: 50,
+            child: Row(
+              children: [
+                (lastSent == null)
+                    ? IconButton(
+                        onPressed: () {
+                          widget.input.send(_messageController.text);
+                          setState(() {
+                            lastSent = _messageController.text;
+                          });
+                          _messageController.clear();
+                        },
+                        icon: const Icon(Icons.send))
+                    : CircularProgressIndicator(),
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                  ),
                 ),
-              )
-            ],
-          ),
-        )
+                IconButton(
+                    onPressed: () => _scrollController
+                        .jumpTo(_scrollController.position.maxScrollExtent),
+                    icon: Icon(Icons.arrow_downward))
+              ],
+            ),
+          )
       ],
     );
   }

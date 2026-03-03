@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import "package:mobile_scanner/mobile_scanner.dart";
+import 'package:orchastrator/components/password_form_field.dart';
 import 'package:string_validator/string_validator.dart';
-
 
 class GroupForm extends StatelessWidget {
   final TextEditingController urlController;
@@ -108,54 +108,11 @@ class AccountForm extends StatelessWidget {
   }
 }
 
-class PasswordFormField extends StatefulWidget {
-  final TextEditingController controller;
-  const PasswordFormField({super.key, required this.controller});
-
-  @override
-  State<PasswordFormField> createState() {
-    return _PasswordFieldState();
-  }
-}
-
-class _PasswordFieldState extends State<PasswordFormField> {
-  bool _passwordVisible = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(
-          labelText: 'Password',
-          border: const OutlineInputBorder(),
-          suffixIcon: IconButton(
-            icon: Icon(
-                _passwordVisible ? Icons.visibility : Icons.visibility_off),
-            onPressed: () {
-              setState(() {
-                _passwordVisible = !_passwordVisible;
-              });
-            },
-          )),
-      controller: widget.controller,
-      keyboardType: TextInputType.visiblePassword,
-      obscureText: !_passwordVisible,
-      enableSuggestions: false,
-      autocorrect: false,
-      textInputAction: TextInputAction.next,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Field is required';
-        }
-        return null;
-      },
-    );
-  }
-}
-
 class KeyForm extends StatefulWidget {
   final TextEditingController nameController;
   final TextEditingController keyController;
-  const KeyForm({super.key, required this.nameController, required this.keyController});
+  const KeyForm(
+      {super.key, required this.nameController, required this.keyController});
 
   @override
   State<KeyForm> createState() => _KeyFormState();
@@ -224,7 +181,6 @@ class _KeyFormState extends State<KeyForm> {
                 }
                 return null;
               },
-
             ),
             const Text(
                 "you need to scan a data matrix provided by another user of "

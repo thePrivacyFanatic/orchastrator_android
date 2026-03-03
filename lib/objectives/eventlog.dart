@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:orchastrator/bindings.dart';
 
-
-class EventList extends StatefulWidget{
+class EventList extends StatefulWidget {
   final ObjectiveInput input;
 
   const EventList({super.key, required this.input});
@@ -29,10 +28,9 @@ class _EventListState extends State<EventList> {
     widget.input.receiver.listen((msg) {
       if (msg.mtype == 1) {
         setState(() {
-        events.add(msg);
-      });
+          events.add(msg);
+        });
       }
-
     });
   }
 

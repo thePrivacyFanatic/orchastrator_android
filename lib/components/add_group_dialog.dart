@@ -14,14 +14,13 @@ class AddGroupDialog extends StatefulWidget {
 }
 
 class _AddGroupDialogState extends State<AddGroupDialog> {
-  int _index = 0;
-  int _maxStep = 1;
-  TextEditingController urlController = TextEditingController();
-  TextEditingController gidController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController displayNameController = TextEditingController();
-  TextEditingController keyController = TextEditingController();
+  int _index = 0, _maxStep = 1;
+  final TextEditingController urlController = TextEditingController(),
+      gidController = TextEditingController(),
+      nameController = TextEditingController(),
+      passwordController = TextEditingController(),
+      displayNameController = TextEditingController(),
+      keyController = TextEditingController();
 
   late List<Widget> containers = [
     GroupForm(urlController: urlController, gidController: gidController),

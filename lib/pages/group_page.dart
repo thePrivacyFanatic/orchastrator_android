@@ -26,10 +26,10 @@ class _GroupPageState extends State<GroupPage> {
           .readAsStringSync()));
   final Map<int, StreamController<Message>> streams = {};
   ConnectionHandler? connection;
-  // nonmodualr but will require more replacement
+  // non modular but will require a more thorough replacement
   final List<User> users = List<User>.empty(growable: true);
   final List<Widget> containers = List<Widget>.empty(growable: true);
-  late final int privilege;
+  late final Privilege privilege;
   late int lastSid = int.parse(
       File("${widget.groupDir}${Platform.pathSeparator}lastSid")
           .readAsStringSync());
@@ -37,8 +37,6 @@ class _GroupPageState extends State<GroupPage> {
   @override
   void initState() {
     super.initState();
-    containers.add(EventList(input: _subscribe(0, users)));
-    containers.add(Chat(input: _subscribe(1, users)));
     for (var str in (jsonDecode(
         File("${widget.groupDir}${Platform.pathSeparator}users.json")
             .readAsStringSync()) as List)) {
@@ -47,88 +45,93 @@ class _GroupPageState extends State<GroupPage> {
       if (user.name == details.username) {
         privilege = user.privilege;
       }
+      containers.add(EventList(input: _subscribe(0, users)));
+      containers.add(Chat(input: _subscribe(1, users)));
     }
-  }
-
-  Future<void> _connect() async {
-    connection = await ConnectionHandler.fromGroup(details, lastSid);
-    connection!.received.listen(_receive);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(details.displayName),
-        actions: [
-          SizedBox(
-            child: IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => GroupSettings(
-                      privilege: privilege,
+    return FutureBuilder(
+        future: ConnectionHandler.fromGroup(details, lastSid),
+        builder: (context, asyncSnapshot) {
+          if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: Column(
+                children: [
+                  Text("connecting to the server..."),
+                  CircularProgressIndicator()
+                ],
+              ),
+            );
+          }
+          if (asyncSnapshot.hasError) {
+            if (asyncSnapshot.error is IOException) {
+              return Center(
+                child: Card(
+                    child: Column(
+                  children: [
+                    const Text(
+                      "we could not connect to the server :(",
+                    ),
+                    const Text("here is the error message:"),
+                    Text(asyncSnapshot.error.toString())
+                  ],
+                )),
+              );
+            }
+            if (asyncSnapshot.error == Exception("login fail")) {
+              return Center(
+                child: Text("could not log into account :("),
+              );
+            }
+            if (asyncSnapshot.error is FlutterError) {
+              return Center(
+                child: ErrorWidget.withDetails(
+                  error: asyncSnapshot.error as FlutterError,
+                ),
+              );
+            }
+          }
+          connection = asyncSnapshot.data;
+          connection!.received.listen(_receive);
+          return Scaffold(
+              appBar: AppBar(
+                title: Text(details.displayName),
+                actions: [
+                  SizedBox(
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => GroupSettings(
+                              privilege: privilege,
+                              connection: connection!,
+                              users: users,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.settings,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      iconSize: 28,
+                      tooltip: 'group settings',
                     ),
                   ),
-                );
-              },
-              icon: Icon(
-                Icons.settings,
-                color: Theme.of(context).colorScheme.onSurface,
+                ],
               ),
-              iconSize: 28,
-              tooltip: 'group settings',
-            ),
-          ),
-        ],
-      ),
-      body: FutureBuilder(
-          future: _connect(),
-          builder: (context, asyncSnapshot) {
-            if (asyncSnapshot.hasError) {
-              if (asyncSnapshot.error is IOException) {
-                return Center(
-                  child: Card(
-                      child: Column(
-                    children: [
-                      const Text(
-                        "we could not connect to the server :(",
-                      ),
-                      const Text("here is the error message:"),
-                      Text(asyncSnapshot.error.toString())
-                    ],
-                  )),
-                );
-              }
-              if (asyncSnapshot.error == Exception("login fail")) {
-                return Center(
-                  child: Text("could not log into account :("),
-                );
-              }
-              if (asyncSnapshot.error is FlutterError) {
-                return Center(
-                  child: ErrorWidget.withDetails(
-                    error: asyncSnapshot.error as FlutterError,
-                  ),
-                );
-              }
-            }
-            if (asyncSnapshot.connectionState == ConnectionState.done) {
-              return ListView.builder(
+              body: ListView.builder(
                 itemBuilder: (context, index) {
                   return SizedBox(
-                    height: 500,
+                    height: 300,
                     child: Card(child: containers[index]),
                   );
                 },
                 itemCount: containers.length,
-              );
-            }
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }),
-    );
+              ));
+        });
   }
 
   void _receive(Message message) {
@@ -150,6 +153,7 @@ class _GroupPageState extends State<GroupPage> {
       connection!.send(jsonEncode({"oid": oid, "content": message}));
     });
     return ObjectiveInput(
+        privilege: privilege,
         receiver: receiver.stream,
         send: (msg) {
           controller.add(msg);
@@ -180,6 +184,7 @@ class _GroupPageState extends State<GroupPage> {
           return user.uid == content["uid"];
         }).privilege = content["new"];
         broadcast(message);
+      // currently unused
       // case ("objective addition"):
       //   {
       //     var path =

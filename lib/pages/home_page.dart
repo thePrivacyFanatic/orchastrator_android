@@ -36,34 +36,38 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: GroupList(key: listKey,),
+      body: GroupList(
+        key: listKey,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           GroupDetails? details = await showDialog(
             context: context,
-            builder: (context) => AddGroupDialog(
-            ),
+            builder: (context) => AddGroupDialog(),
           );
           if (details != null) {
-              var dir = Directory(
-                  "${(await getApplicationDocumentsDirectory()).path}${Platform.pathSeparator}groups${Platform.pathSeparator}${details.displayName}");
-              if (await dir.exists()) {
-                throw Exception("there's already a group by that name");
-              }
-              await dir.create(recursive: true);
-              File("${dir.path}${Platform.pathSeparator}details.json")
-                  .writeAsString(jsonEncode(details));
-              File("${dir.path}${Platform.pathSeparator}users.json")
-                  .writeAsString(jsonEncode([User(uid: 0, name: 'SYSTEM', privilege: 0)]));
-              File("${dir.path}${Platform.pathSeparator}lastSid")
-                  .writeAsString("0");
-              // non modular part, hopefully can be removed soon
-              await Directory("${dir.path}${Platform.pathSeparator}states").create();
-              for (int i = 0; i < 2; i++) {
-                File("${dir.path}${Platform.pathSeparator}states${Platform.pathSeparator}$i")
-                    .create(recursive: true);
-              }
-              listKey.currentState?.addGroup(dir);
+            var dir = Directory(
+                "${(await getApplicationDocumentsDirectory()).path}${Platform.pathSeparator}groups${Platform.pathSeparator}${details.displayName}");
+            if (await dir.exists()) {
+              throw Exception("there's already a group by that name");
+            }
+            await dir.create(recursive: true);
+            File("${dir.path}${Platform.pathSeparator}details.json")
+                .writeAsString(jsonEncode(details));
+            File("${dir.path}${Platform.pathSeparator}users.json")
+                .writeAsString(jsonEncode([
+              User(uid: 0, name: 'SYSTEM', privilege: Privilege.admin)
+            ]));
+            File("${dir.path}${Platform.pathSeparator}lastSid")
+                .writeAsString("0");
+            // non modular part, hopefully can be removed soon
+            await Directory("${dir.path}${Platform.pathSeparator}states")
+                .create();
+            for (int i = 0; i < 2; i++) {
+              File("${dir.path}${Platform.pathSeparator}states${Platform.pathSeparator}$i")
+                  .create(recursive: true);
+            }
+            listKey.currentState?.addGroup(dir);
           }
         },
         tooltip: 'Add new group...',

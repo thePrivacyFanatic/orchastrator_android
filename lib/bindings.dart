@@ -1,7 +1,37 @@
 import 'dart:io';
 import 'dart:core';
 import 'package:eval_annotation/eval_annotation.dart';
+import 'package:flutter/material.dart';
 
+enum Privilege {
+  banned,
+  listener,
+  publisher,
+  moderator,
+  admin;
+
+  bool operator >(Privilege other) {
+    return index > other.index;
+  }
+
+  bool operator <(Privilege other) {
+    return index < other.index;
+  }
+
+  bool operator >=(Privilege other) {
+    return index >= other.index;
+  }
+
+  bool operator <=(Privilege other) {
+    return index <= other.index;
+  }
+
+  static final List<DropdownMenuEntry<Privilege>> menuEntries = Privilege.values
+      .map((Privilege v) => DropdownMenuEntry(value: v, label: v.name))
+      .toList();
+
+  int toJson() => index;
+}
 
 class Message {
   String content;
@@ -10,20 +40,23 @@ class Message {
   final int mtype;
 
   Message(
-      {required this.content, required this.timestamp, required this.sender, required this.mtype});
+      {required this.content,
+      required this.timestamp,
+      required this.sender,
+      required this.mtype});
 
   Message.fromJson(Map<String, dynamic> json)
       : content = json["content"],
         timestamp = DateTime.parse(json["timestamp"]),
         sender = json["sender"] as int,
-        mtype = json["mtype"]as int;
+        mtype = json["mtype"] as int;
 
   Map<String, dynamic> toJson() => {
-    "content": content,
-    "timestamp": timestamp.toString(),
-    "sender": sender,
-    "mtype": mtype
-  };
+        "content": content,
+        "timestamp": timestamp.toString(),
+        "sender": sender,
+        "mtype": mtype
+      };
 
   @override
   String toString() {
@@ -31,34 +64,34 @@ class Message {
   }
 }
 
-
 class User {
   final int uid;
   final String name;
-  int privilege;
+  Privilege privilege;
 
   User({required this.uid, required this.name, required this.privilege});
 
   User.fromJson(Map<String, dynamic> json)
       : uid = json["uid"] as int,
         name = json["name"] as String,
-        privilege = json["privilege"] as int;
+        privilege = Privilege.values[json["privilege"] as int];
 
-  Map<String, dynamic> toJson() => {
-    "uid": uid,
-    "name": name,
-    "privilege": privilege
-  };
-
+  Map<String, dynamic> toJson() =>
+      {"uid": uid, "name": name, "privilege": privilege};
 }
 
 @Bind()
 class ObjectiveInput {
+  final Privilege privilege;
   final Stream<Message> receiver;
   final Function send;
   final List<User> users;
   final File state;
 
-  ObjectiveInput({required this.receiver, required this.send, required this.users, required this.state});
+  ObjectiveInput(
+      {required this.receiver,
+      required this.send,
+      required this.users,
+      required this.state,
+      required this.privilege});
 }
-

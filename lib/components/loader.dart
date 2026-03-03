@@ -11,6 +11,7 @@ import 'package:orchastrator/eval_plugin.dart';
 import 'package:path/path.dart';
 
 class ObjectiveContainer extends StatefulWidget {
+  final Privilege privilege;
   final String path;
   final Stream<Message> receive;
   final StreamController out;
@@ -22,6 +23,7 @@ class ObjectiveContainer extends StatefulWidget {
     required this.receive,
     required this.out,
     required this.users,
+    required this.privilege,
   });
 
   @override
@@ -35,6 +37,7 @@ class _ObjectiveContainerState extends State<ObjectiveContainer> {
     function: "Objective.create",
     args: [
       $ObjectiveInput.wrap(ObjectiveInput(
+          privilege: widget.privilege,
           receiver: widget.receive,
           send: (content) {
             widget.out.add(

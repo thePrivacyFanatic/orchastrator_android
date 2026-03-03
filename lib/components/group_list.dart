@@ -71,7 +71,6 @@ class GroupItem extends StatefulWidget {
 }
 
 class _GroupItemState extends State<GroupItem> {
-
   @override
   Widget build(BuildContext context) {
     return Card(
