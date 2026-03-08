@@ -2,14 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:aes256/aes256.dart';
+import 'package:async/async.dart';
 import 'package:orchastrator/bindings.dart';
 import 'package:orchastrator/classes/group_details.dart';
 import 'package:orchastrator/classes/login.dart';
 
+class LoginFail extends Error {}
+
 class ConnectionHandler {
   final WebSocket _connection;
   final String _passphrase;
-  late final Stream<Message> received = _connection.asyncMap(_decrypt);
+  late final StreamSplitter<dynamic> _splitter = StreamSplitter(_connection);
+  late final Stream<Message> received = _splitter.split().skip(1).asyncMap(_decrypt);
 
   ConnectionHandler._(String secretKey, {required WebSocket connection})
       : _connection = connection,
@@ -17,15 +21,21 @@ class ConnectionHandler {
 
   static Future<ConnectionHandler> fromGroup(
       GroupDetails details, int lastSid) async {
-    WebSocket connection;
-    connection =
-        await WebSocket.connect("ws://${details.relayURL}/${details.gid}");
-    connection.add(jsonEncode(Login.fromDetails(details)));
-    if (connection.closeCode == 1008) {
-      throw Exception("login fail");
+    var connection =
+    await WebSocket.connect("ws://${details.relayURL}/${details.gid}");
+    var handler =  ConnectionHandler._(details.aesKey, connection: connection);
+    await handler._hello(details.username, details.password, lastSid);
+    return handler;
+  }
+
+  Future<void> _hello(String username, String password, int lastSid) async {
+    _connection.add(jsonEncode(Login(username: username, password: password)));
+    try {
+      await _splitter.split().first;
+    } on StateError catch (_) {
+      throw LoginFail();
     }
-    connection.add(lastSid.toString());
-    return ConnectionHandler._(details.aesKey, connection: connection);
+    _connection.add(lastSid.toString());
   }
 
   Future<Message> _decrypt(dynamic received) async {

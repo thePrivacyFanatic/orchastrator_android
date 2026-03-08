@@ -29,7 +29,8 @@ class _GroupPageState extends State<GroupPage> {
   // non modular but will require a more thorough replacement
   final List<User> users = List<User>.empty(growable: true);
   final List<Widget> containers = List<Widget>.empty(growable: true);
-  late final Privilege privilege;
+  ValueNotifier<User> me = ValueNotifier(
+      User(uid: 999, name: "unknown", privilege: Privilege.listener));
   late int lastSid = int.parse(
       File("${widget.groupDir}${Platform.pathSeparator}lastSid")
           .readAsStringSync());
@@ -43,11 +44,11 @@ class _GroupPageState extends State<GroupPage> {
       var user = User.fromJson(str);
       users.add(user);
       if (user.name == details.username) {
-        privilege = user.privilege;
+        me.value = user;
       }
-      containers.add(EventList(input: _subscribe(0, users)));
-      containers.add(Chat(input: _subscribe(1, users)));
     }
+    containers.add(EventList(input: _subscribe(0, users)));
+    containers.add(Chat(input: _subscribe(1, users)));
   }
 
   @override
@@ -56,42 +57,25 @@ class _GroupPageState extends State<GroupPage> {
         future: ConnectionHandler.fromGroup(details, lastSid),
         builder: (context, asyncSnapshot) {
           if (asyncSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: Column(
-                children: [
-                  Text("connecting to the server..."),
-                  CircularProgressIndicator()
-                ],
+            return Scaffold(
+              appBar: AppBar(title: const Text("Connecting..."),),
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("connecting to the server..."),
+                    CircularProgressIndicator()
+                  ],
+                ),
               ),
             );
           }
-          if (asyncSnapshot.hasError) {
-            if (asyncSnapshot.error is IOException) {
-              return Center(
-                child: Card(
-                    child: Column(
-                  children: [
-                    const Text(
-                      "we could not connect to the server :(",
-                    ),
-                    const Text("here is the error message:"),
-                    Text(asyncSnapshot.error.toString())
-                  ],
-                )),
-              );
-            }
-            if (asyncSnapshot.error == Exception("login fail")) {
-              return Center(
-                child: Text("could not log into account :("),
-              );
-            }
-            if (asyncSnapshot.error is FlutterError) {
-              return Center(
-                child: ErrorWidget.withDetails(
-                  error: asyncSnapshot.error as FlutterError,
-                ),
-              );
-            }
+          if (asyncSnapshot.hasError)
+          {
+            return Scaffold(
+              appBar: AppBar(title: const Text("now this is awkward..."),),
+              body: Center(child: ErrorScreenBody(error: asyncSnapshot.error!)),
+            );
           }
           connection = asyncSnapshot.data;
           connection!.received.listen(_receive);
@@ -105,7 +89,7 @@ class _GroupPageState extends State<GroupPage> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => GroupSettings(
-                              privilege: privilege,
+                              me: me,
                               connection: connection!,
                               users: users,
                             ),
@@ -153,7 +137,7 @@ class _GroupPageState extends State<GroupPage> {
       connection!.send(jsonEncode({"oid": oid, "content": message}));
     });
     return ObjectiveInput(
-        privilege: privilege,
+        me: me,
         receiver: receiver.stream,
         send: (msg) {
           controller.add(msg);
@@ -177,26 +161,18 @@ class _GroupPageState extends State<GroupPage> {
         users.add(user);
         broadcast(message);
         if (user.name == details.username) {
-          privilege = user.privilege;
+          me.value = user;
         }
       case ("perm"):
         users.firstWhere((user) {
           return user.uid == content["uid"];
-        }).privilege = content["new"];
+        }).privilege = Privilege.values[content["new"] as int];
         broadcast(message);
-      // currently unused
-      // case ("objective addition"):
-      //   {
-      //     var path =
-      //         "${widget.groupDir}${Platform.pathSeparator}objectives${Platform.pathSeparator}${content["oid"]}";
-      //     Directory(path).create();
-      //     File("$path${Platform.pathSeparator}widget.evc")
-      //         .writeAsBytesSync(utf8.encode(content["implementation"]));
-      //     File("$path${Platform.pathSeparator}state").create();
-      //     setState(() {
-      //       groups.add(_subscribe(Directory(path), users));
-      //     });
-      //   }
+        if (content["uid"] == me.value.uid) {
+          var newMe = me.value;
+          newMe.privilege = Privilege.values[content["new"] as int];
+          me.value = newMe;
+        }
     }
   }
 
@@ -208,9 +184,37 @@ class _GroupPageState extends State<GroupPage> {
     super.dispose();
     File("${widget.groupDir}${Platform.pathSeparator}users.json")
         .writeAsString(jsonEncode(users));
-    File("${widget.groupDir}${Platform.pathSeparator}details.json")
-        .writeAsString(jsonEncode(details));
     File("${widget.groupDir}${Platform.pathSeparator}lastSid")
         .writeAsString(lastSid.toString());
   }
 }
+
+class ErrorScreenBody extends StatelessWidget {
+  final Object error;
+  const ErrorScreenBody({super.key, required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    if (error is IOException) {
+      return Column(
+        children: [
+          const Text(
+            "we could not connect to the server :(",
+          ),
+          const Text("here is the error message:"),
+          Text(error.toString())
+        ],
+      );
+    }
+    if (error is LoginFail) {
+      return const Text("could not log into your account :(");
+    }
+    if (error is FlutterError) {
+      return ErrorWidget.withDetails(
+        error: error as FlutterError,
+      );
+    }
+    return ErrorWidget(error);
+  }
+}
+

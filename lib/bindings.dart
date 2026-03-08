@@ -82,7 +82,7 @@ class User {
 
 @Bind()
 class ObjectiveInput {
-  final Privilege privilege;
+  final ValueNotifier<User> me;
   final Stream<Message> receiver;
   final Function send;
   final List<User> users;
@@ -93,5 +93,7 @@ class ObjectiveInput {
       required this.send,
       required this.users,
       required this.state,
-      required this.privilege});
+      required this.me});
 }
+
+final systemUser = User(uid: 0, name: 'SYSTEM', privilege: Privilege.admin);

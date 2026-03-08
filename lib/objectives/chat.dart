@@ -53,7 +53,7 @@ class _ChatState extends State<Chat> {
           itemBuilder: (context, index) => messages[index],
           itemCount: messages.length,
         )),
-        if (widget.input.privilege >= Privilege.publisher)
+        if (widget.input.me.value.privilege >= Privilege.publisher)
           SizedBox(
             height: 50,
             child: Row(
@@ -100,6 +100,7 @@ class ChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: (message.mtype == 0) ? Theme.of(context).cardColor: Theme.of(context).highlightColor,
       child: ListTile(
         leading: Text("${message.sender}"),
         title: Text(message.content),

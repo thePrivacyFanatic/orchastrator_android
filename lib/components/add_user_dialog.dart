@@ -20,32 +20,43 @@ class _AddUserDialogState extends State<AddUserDialog> {
       title: const Text("Add a new user"),
       content: Form(
           key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                validator: (val) {
-                  if (val == "") return "please type a username";
-                  return null;
-                },
-                onSaved: (val) => username = val,
-              ),
-              PasswordFormField(
-                validator: (val) {
-                  if (val == "") return "please type a password";
-                  return null;
-                },
-                onSaved: (val) => password = val,
-              ),
-              DropdownMenuFormField<Privilege>(
-                validator: (selection) =>
-                    (selection == null) ? "please make a selection" : null,
-                dropdownMenuEntries: Privilege.menuEntries
-                    .where((entry) => (entry.value > widget.privilege ||
-                        widget.privilege == Privilege.admin))
-                    .toList(),
-                onSaved: (val) => privilege = val!,
-              )
-            ],
+          child: SizedBox(
+            height: 180,
+            width: 300,
+            child: Column(
+              children: [
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: "username",
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: (val) {
+                    if (val == "") return "please type a username";
+                    return null;
+                  },
+                  onSaved: (val) => username = val,
+                ),
+                SizedBox(height: 10,),
+                PasswordFormField(
+                  validator: (val) {
+                    if (val == "") return "please type a password";
+                    return null;
+                  },
+                  onSaved: (val) => password = val,
+                ),
+                SizedBox(height: 10,),
+                DropdownMenuFormField<Privilege>(
+                  label: const Text("permission"),
+                  validator: (selection) =>
+                      (selection == null) ? "please make a selection" : null,
+                  dropdownMenuEntries: Privilege.menuEntries
+                      .where((entry) => (entry.value > widget.privilege ||
+                          widget.privilege == Privilege.admin))
+                      .toList(),
+                  onSaved: (val) => privilege = val!,
+                ),
+              ],
+            ),
           )),
       actions: [
         TextButton(

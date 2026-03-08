@@ -6,12 +6,12 @@ import 'package:orchastrator/classes/connection_handler.dart';
 import 'package:orchastrator/components/add_user_dialog.dart';
 
 class GroupSettings extends StatelessWidget {
-  final Privilege privilege;
+  final ValueNotifier<User> me;
   final ConnectionHandler connection;
   final List<User> users;
   const GroupSettings(
       {super.key,
-      required this.privilege,
+      required this.me,
       required this.connection,
       required this.users});
 
@@ -28,23 +28,26 @@ class GroupSettings extends StatelessWidget {
                 height: 500,
                 child: Column(
                   children: [
-                    if (privilege > Privilege.moderator)
+                    if ((me.value.privilege) > Privilege.moderator)
                       TextButton(
                           onPressed: () {
                             showDialog(
                                 context: context,
                                 builder: (context) => AddUserDialog(
-                                      privilege: privilege,
-                                    )).then((message) =>
-                                connection.sendExt(jsonEncode(message)));
+                                      privilege: me.value.privilege,
+                                    )).then((message) {
+                              if (message != null) {
+                                connection.sendExt(jsonEncode(message));
+                              }
+                            });
                           },
                           child: const Text("Add a new user to the group")),
                     Expanded(
                         child: ListView.builder(
-                          itemCount: users.length,
+                            itemCount: users.length,
                             itemBuilder: (context, index) => UserTile(
                                   user: users[index],
-                                  privilege: privilege,
+                                  me: me,
                                   permChanger: (newPrivilege) {
                                     connection.sendExt(jsonEncode({
                                       "type": "perm",
@@ -65,7 +68,7 @@ class GroupSettings extends StatelessWidget {
 }
 
 class UserTile extends StatelessWidget {
-  final Privilege privilege;
+  final ValueNotifier<User> me;
   final User user;
   final void Function(Privilege) permChanger;
 
@@ -73,14 +76,16 @@ class UserTile extends StatelessWidget {
       {super.key,
       required this.user,
       required this.permChanger,
-      required this.privilege});
+      required this.me});
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         leading: Text("${user.uid}"),
         title: Text(user.name),
-        trailing: (privilege == Privilege.admin || privilege > user.privilege)
+        trailing: ((me.value.privilege == Privilege.admin ||
+                    (me.value.privilege > user.privilege && me.value.privilege == Privilege.moderator)) &&
+                !(user == me.value || user.uid == 0))
             ? DropdownMenu(
                 dropdownMenuEntries: Privilege.menuEntries,
                 initialSelection: user.privilege,

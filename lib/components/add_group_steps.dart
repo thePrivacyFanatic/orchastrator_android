@@ -127,67 +127,65 @@ class _KeyFormState extends State<KeyForm> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (_scanning) {
-          setState(() {
-            _scanning = false;
-            _scannerController.stop();
-          });
-        } else {
-          Navigator.pop(context);
-        }
-      },
-      child: AnimatedCrossFade(
-        firstChild: Column(
-          children: [
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'display name',
+    return AnimatedCrossFade(
+      firstChild: Column(
+        children: [
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'display name',
+              border: const OutlineInputBorder(),
+            ),
+            controller: widget.nameController,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          TextFormField(
+            controller: widget.keyController,
+            decoration: InputDecoration(
+                labelText: '256 bit shared group key',
                 border: const OutlineInputBorder(),
-              ),
-              controller: widget.nameController,
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            TextFormField(
-              controller: widget.keyController,
-              decoration: InputDecoration(
-                  labelText: '256 bit shared group key',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.qr_code_2),
-                    onPressed: () {
-                      setState(() {
-                        _scanning = true;
-                      });
-                      sleep(_switching);
-                      _scannerController.start();
-                    },
-                  )),
-              keyboardType: TextInputType.visiblePassword,
-              textInputAction: TextInputAction.next,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Field is required';
-                }
-                if (!value.isAlphanumeric) {
-                  return "value has to be a base64 key";
-                }
-                if (value.length != 32) {
-                  return 'key length invalid';
-                }
-                return null;
-              },
-            ),
-            const Text(
-                "you need to scan a data matrix provided by another user of "
-                "the group in order to be able to access messages")
-          ],
-        ),
-        secondChild: SizedBox(
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.qr_code_2),
+                  onPressed: () {
+                    setState(() {
+                      _scanning = true;
+                    });
+                    sleep(_switching);
+                    _scannerController.start();
+                  },
+                )),
+            keyboardType: TextInputType.visiblePassword,
+            textInputAction: TextInputAction.next,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Field is required';
+              }
+              if (!value.isAlphanumeric) {
+                return "value has to be a base64 key";
+              }
+              if (value.length != 32) {
+                return 'key length invalid';
+              }
+              return null;
+            },
+          ),
+          const Text(
+              "you need to scan a data matrix provided by another user of "
+              "the group in order to be able to access messages")
+        ],
+      ),
+      secondChild: PopScope(
+        canPop: !_scanning,
+        onPopInvokedWithResult: (didPop, result) {
+          if (_scanning) {
+            setState(() {
+              _scanning = false;
+              _scannerController.stop();
+            });
+          }
+        },
+        child: SizedBox(
           height: 350,
           width: 400,
           child: ClipRRect(
@@ -204,11 +202,11 @@ class _KeyFormState extends State<KeyForm> {
                 }),
           ),
         ),
-        crossFadeState:
-            (_scanning) ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-        duration: _switching,
-        reverseDuration: _switching,
       ),
+      crossFadeState:
+          (_scanning) ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+      duration: _switching,
+      reverseDuration: _switching,
     );
   }
 }

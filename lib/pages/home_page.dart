@@ -56,7 +56,7 @@ class HomePage extends StatelessWidget {
                 .writeAsString(jsonEncode(details));
             File("${dir.path}${Platform.pathSeparator}users.json")
                 .writeAsString(jsonEncode([
-              User(uid: 0, name: 'SYSTEM', privilege: Privilege.admin)
+              systemUser
             ]));
             File("${dir.path}${Platform.pathSeparator}lastSid")
                 .writeAsString("0");

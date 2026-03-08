@@ -39,22 +39,17 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
+      canPop: (_index == 0),
       onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
         if (result != null) {
-          Navigator.pop(context, result);
+          WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.pop(context, result));
           return;
         }
-        if (_index > 0) {
-          setState(() {
-            _index -= 1;
-          });
-          return;
-        } else {
-          WidgetsBinding.instance
-              .addPostFrameCallback((_) => Navigator.pop(context, null));
-          return;
-        }
+        setState(() {
+          _index -= 1;
+        });
+        return;
       },
       child: AlertDialog(
         title: Text("Add new group"),
@@ -98,7 +93,7 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
         });
         _maxStep = max(_maxStep, _index + 1);
       } else {
-        WidgetsBinding.instance.addPostFrameCallback((_) => Navigator.pop(
+        Navigator.pop(
             context,
             GroupDetails(
                 gid: gidController.text,
@@ -106,7 +101,7 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
                 relayURL: urlController.text,
                 username: nameController.text,
                 password: passwordController.text,
-                aesKey: keyController.text)));
+                aesKey: keyController.text));
       }
     }
   }
