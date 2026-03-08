@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:core';
-import 'package:eval_annotation/eval_annotation.dart';
 import 'package:flutter/material.dart';
 
 enum Privilege {
@@ -80,7 +79,6 @@ class User {
       {"uid": uid, "name": name, "privilege": privilege};
 }
 
-@Bind()
 class ObjectiveInput {
   final ValueNotifier<User> me;
   final Stream<Message> receiver;

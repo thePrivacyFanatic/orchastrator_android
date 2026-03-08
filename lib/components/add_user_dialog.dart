@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:orchastrator/bindings.dart';
+import 'package:orchastrator/classes/bindings.dart';
 import 'package:orchastrator/components/password_form_field.dart';
 
 class AddUserDialog extends StatefulWidget {

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:aes256/aes256.dart';
 import 'package:async/async.dart';
-import 'package:orchastrator/bindings.dart';
+import 'package:orchastrator/classes/bindings.dart';
 import 'package:orchastrator/classes/group_details.dart';
 import 'package:orchastrator/classes/login.dart';
 

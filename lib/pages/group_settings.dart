@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:orchastrator/bindings.dart';
+import 'package:orchastrator/classes/bindings.dart';
 import 'package:orchastrator/classes/connection_handler.dart';
 import 'package:orchastrator/components/add_user_dialog.dart';
 

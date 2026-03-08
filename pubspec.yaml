@@ -16,9 +16,6 @@ dependencies:
   smart_stepper:
   mobile_scanner:
   async:
-  flutter_eval:
-  dart_eval:
-  eval_annotation:
   aes256:
 dev_dependencies:
   flutter_test:

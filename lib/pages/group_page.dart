@@ -8,7 +8,7 @@ import 'package:orchastrator/classes/group_details.dart';
 import 'package:orchastrator/objectives/eventlog.dart';
 import 'package:orchastrator/pages/group_settings.dart';
 
-import '../bindings.dart';
+import '../classes/bindings.dart';
 import '../objectives/chat.dart';
 
 class GroupPage extends StatefulWidget {

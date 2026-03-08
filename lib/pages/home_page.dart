@@ -8,7 +8,7 @@ import 'package:orchastrator/pages/app_settings.dart';
 import 'package:orchastrator/classes/group_details.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../bindings.dart';
+import '../classes/bindings.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:orchastrator/bindings.dart';
+import 'package:orchastrator/classes/bindings.dart';
 
 class Chat extends StatefulWidget {
   final ObjectiveInput input;
