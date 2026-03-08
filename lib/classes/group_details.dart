@@ -1,31 +1,27 @@
-
-
 class GroupDetails {
-  final int gid;
-  final String displayName;
+  final String gid;
+  String displayName;
   final String relayURL;
   final String username;
   final String password;
   final String aesKey;
-  int lastSid;
 
-  GroupDetails(
-      {required this.gid,
-      required this.displayName,
-      required this.relayURL,
-      required this.username,
-      required this.password,
-      required this.aesKey,
-      required this.lastSid});
+  GroupDetails({
+    required this.gid,
+    required this.displayName,
+    required this.relayURL,
+    required this.username,
+    required this.password,
+    required this.aesKey,
+  });
 
-  GroupDetails.fromJson(Map<String, dynamic> jsonString)
-      : gid = jsonString['gid'] as int,
-        displayName = jsonString['displayName'] as String,
-        relayURL = jsonString['relayURL'] as String,
-        username = jsonString['username'] as String,
-        password = jsonString['password'] as String,
-        aesKey = jsonString['AESKey'] as String,
-        lastSid = jsonString['lastSid'] as int;
+  GroupDetails.fromJson(Map<String, dynamic> json)
+      : gid = json['gid'] as String,
+        displayName = json['displayName'] as String,
+        relayURL = json['relayURL'] as String,
+        username = json['username'] as String,
+        password = json['password'] as String,
+        aesKey = json['AESKey'] as String;
 
   Map<String, dynamic> toJson() => {
         'gid': gid,
@@ -33,7 +29,6 @@ class GroupDetails {
         "relayURL": relayURL,
         "username": username,
         "password": password,
-        "AESKey": aesKey,
-        "lastSid": lastSid
+        "AESKey": aesKey
       };
 }

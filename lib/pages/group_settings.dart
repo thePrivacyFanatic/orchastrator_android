@@ -1,7 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:orchastrator/classes/bindings.dart';
+import 'package:orchastrator/classes/connection_handler.dart';
+import 'package:orchastrator/components/add_user_dialog.dart';
 
 class GroupSettings extends StatelessWidget {
-  const GroupSettings({super.key});
+  final ValueNotifier<User> me;
+  final ConnectionHandler connection;
+  final List<User> users;
+  const GroupSettings(
+      {super.key,
+      required this.me,
+      required this.connection,
+      required this.users});
 
   @override
   Widget build(BuildContext context) {
@@ -10,70 +22,76 @@ class GroupSettings extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            'Notifications',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
+          Column(
+            children: [
+              SizedBox(
+                height: 500,
+                child: Column(
+                  children: [
+                    if ((me.value.privilege) > Privilege.moderator)
+                      TextButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AddUserDialog(
+                                      privilege: me.value.privilege,
+                                    )).then((message) {
+                              if (message != null) {
+                                connection.sendExt(jsonEncode(message));
+                              }
+                            });
+                          },
+                          child: const Text("Add a new user to the group")),
+                    Expanded(
+                        child: ListView.builder(
+                            itemCount: users.length,
+                            itemBuilder: (context, index) => UserTile(
+                                  user: users[index],
+                                  me: me,
+                                  permChanger: (newPrivilege) {
+                                    connection.sendExt(jsonEncode({
+                                      "type": "perm",
+                                      "uid": users[index].uid,
+                                      "new": newPrivilege
+                                    }));
+                                  },
+                                )))
+                  ],
                 ),
-          ),
-          SizedBox(
-            width: 300,
-            child: ListTile(
-              leading: Icon(
-                Icons.notifications_outlined,
-                color: Theme.of(context).colorScheme.primary,
               ),
-              title: const Text('Enable'),
-              subtitle: const Text('Always'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {},
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: 361,
-            height: 8,
-            child: Card(
-              child: Text(
-                'General',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-            ),
-          ),
-          Card(
-            elevation: 0,
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            child: Column(
-              children: [
-                ListTile(
-                  leading: Icon(
-                    Icons.language,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  title: const Text('Lorem'),
-                  subtitle: const Text('Impsum'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: Icon(
-                    Icons.info,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  title: const Text('Dolor'),
-                  subtitle: const Text('Sit amet'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
-                ),
-              ],
-            ),
-          ),
+            ],
+          )
         ],
+      ),
+    );
+  }
+}
+
+class UserTile extends StatelessWidget {
+  final ValueNotifier<User> me;
+  final User user;
+  final void Function(Privilege) permChanger;
+
+  const UserTile(
+      {super.key,
+      required this.user,
+      required this.permChanger,
+      required this.me});
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: Text("${user.uid}"),
+        title: Text(user.name),
+        trailing: ((me.value.privilege == Privilege.admin ||
+                    (me.value.privilege > user.privilege && me.value.privilege == Privilege.moderator)) &&
+                !(user == me.value || user.uid == 0))
+            ? DropdownMenu(
+                dropdownMenuEntries: Privilege.menuEntries,
+                initialSelection: user.privilege,
+                onSelected: (selection) => permChanger(selection!),
+              )
+            : Text(user.privilege.name),
       ),
     );
   }
