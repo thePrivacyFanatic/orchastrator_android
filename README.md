@@ -4,8 +4,7 @@ as orderly as a swiss watch
 the app allows the creation of groups and the different methods of communicating in them,  
 from a simple chat to a tally wager to a station tracker, on completion, this modular app should either have it,  
 or make programming it easy 
-(see [the sdk](https://github.com/thePrivacyFanatic/orchastrator_sdk) 
-for instructions on how to create custom objectives)
+currently adding new objectives requires recompiling as dynamic code loading is out of scope for a school project
 
 ## Features
 1. customizability: custom widgets can be loaded at runtime and data can be shared across many devices
