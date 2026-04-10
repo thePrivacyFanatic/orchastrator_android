@@ -5,12 +5,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:orchastrator/classes/connection_handler.dart';
 import 'package:orchastrator/classes/group_details.dart';
+import 'package:orchastrator/components/barcode_dialog.dart';
 import 'package:orchastrator/objectives/eventlog.dart';
 import 'package:orchastrator/pages/group_settings.dart';
 
 import '../classes/bindings.dart';
 import '../objectives/chat.dart';
 
+/// the page of the group
+///
+/// this page centralizes a lot of function, handling communication between the connection and the objectives
 class GroupPage extends StatefulWidget {
   final String groupDir;
 
@@ -26,7 +30,6 @@ class _GroupPageState extends State<GroupPage> {
           .readAsStringSync()));
   final Map<int, StreamController<Message>> streams = {};
   ConnectionHandler? connection;
-  // non modular but will require a more thorough replacement
   final List<User> users = List<User>.empty(growable: true);
   final List<Widget> containers = List<Widget>.empty(growable: true);
   ValueNotifier<User> me = ValueNotifier(
@@ -47,6 +50,7 @@ class _GroupPageState extends State<GroupPage> {
         me.value = user;
       }
     }
+    // objectives go here
     containers.add(EventList(input: _subscribe(0, users)));
     containers.add(Chat(input: _subscribe(1, users)));
   }
@@ -58,7 +62,16 @@ class _GroupPageState extends State<GroupPage> {
         builder: (context, asyncSnapshot) {
           if (asyncSnapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
-              appBar: AppBar(title: const Text("Connecting..."),),
+              appBar: AppBar(
+                title: Row(
+                  children: [
+                    (details.secure)
+                        ? const Icon(Icons.lock)
+                        : const SizedBox.shrink(),
+                    const Text("Connecting..."),
+                  ],
+                ),
+              ),
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -70,10 +83,11 @@ class _GroupPageState extends State<GroupPage> {
               ),
             );
           }
-          if (asyncSnapshot.hasError)
-          {
+          if (asyncSnapshot.hasError) {
             return Scaffold(
-              appBar: AppBar(title: const Text("now this is awkward..."),),
+              appBar: AppBar(
+                title: const Text("now this is awkward..."),
+              ),
               body: Center(child: ErrorScreenBody(error: asyncSnapshot.error!)),
             );
           }
@@ -83,33 +97,41 @@ class _GroupPageState extends State<GroupPage> {
               appBar: AppBar(
                 title: Text(details.displayName),
                 actions: [
-                  SizedBox(
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => GroupSettings(
-                              me: me,
-                              connection: connection!,
-                              users: users,
-                            ),
+                  IconButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) =>
+                              BarcodeDialog(aesKey: details.aesKey));
+                    },
+                    icon: Icon(Icons.key),
+                    tooltip: 'show key qr code',
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => GroupSettings(
+                            me: me,
+                            connection: connection!,
+                            users: users,
                           ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.settings,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      iconSize: 28,
-                      tooltip: 'group settings',
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.settings,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
+                    iconSize: 28,
+                    tooltip: 'group settings',
                   ),
                 ],
               ),
               body: ListView.builder(
                 itemBuilder: (context, index) {
                   return SizedBox(
-                    height: 300,
+                    height: 400,
                     child: Card(child: containers[index]),
                   );
                 },
@@ -118,6 +140,7 @@ class _GroupPageState extends State<GroupPage> {
         });
   }
 
+  /// function that is called on every received plaintext message
   void _receive(Message message) {
     lastSid++;
     if (message.mtype == 0) {
@@ -129,6 +152,7 @@ class _GroupPageState extends State<GroupPage> {
     }
   }
 
+  /// function that created the [ObjectiveInput] for an objective
   ObjectiveInput _subscribe(int oid, List<User> users) {
     StreamController<Message> receiver = StreamController();
     streams[oid] = receiver;
@@ -147,12 +171,16 @@ class _GroupPageState extends State<GroupPage> {
             "${widget.groupDir}${Platform.pathSeparator}states${Platform.pathSeparator}$oid"));
   }
 
+  /// function that sends a message to all objectives
   void broadcast(Message message) {
     for (var stream in streams.values) {
       stream.add(message);
     }
   }
 
+  /// function that handles external messages
+  ///
+  /// P.S. this still misses client-side authZ checks that will be added in the rebuild
   void _handleExternal(Message message) {
     var content = jsonDecode(message.content);
     switch (content["type"]) {
@@ -189,6 +217,7 @@ class _GroupPageState extends State<GroupPage> {
   }
 }
 
+/// contents of the screen when an error was encountered
 class ErrorScreenBody extends StatelessWidget {
   final Object error;
   const ErrorScreenBody({super.key, required this.error});
@@ -202,7 +231,7 @@ class ErrorScreenBody extends StatelessWidget {
             "we could not connect to the server :(",
           ),
           const Text("here is the error message:"),
-          Text(error.toString())
+          Expanded(child: SingleChildScrollView(child: Text(error.toString())))
         ],
       );
     }
@@ -214,7 +243,15 @@ class ErrorScreenBody extends StatelessWidget {
         error: error as FlutterError,
       );
     }
-    return ErrorWidget(error);
+    return Column(
+      children: [
+        const Text(
+          "we had an unknown error :(",
+        ),
+        const Text(
+            "here is the error message, we suggest you open an issue so we can at least le the app handle it better:"),
+        Expanded(child: SingleChildScrollView(child: Text(error.toString())))
+      ],
+    );
   }
 }
-

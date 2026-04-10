@@ -5,6 +5,9 @@ import 'package:orchastrator/classes/bindings.dart';
 import 'package:orchastrator/classes/connection_handler.dart';
 import 'package:orchastrator/components/add_user_dialog.dart';
 
+/// the settings page of the group
+///
+/// this page handles group-local settings that currently all require permissions
 class GroupSettings extends StatelessWidget {
   final ValueNotifier<User> me;
   final ConnectionHandler connection;
@@ -45,7 +48,7 @@ class GroupSettings extends StatelessWidget {
                     Expanded(
                         child: ListView.builder(
                             itemCount: users.length,
-                            itemBuilder: (context, index) => UserTile(
+                            itemBuilder: (context, index) => _UserTile(
                                   user: users[index],
                                   me: me,
                                   permChanger: (newPrivilege) {
@@ -67,14 +70,14 @@ class GroupSettings extends StatelessWidget {
   }
 }
 
-class UserTile extends StatelessWidget {
+/// tile for users in the user list
+class _UserTile extends StatelessWidget {
   final ValueNotifier<User> me;
   final User user;
   final void Function(Privilege) permChanger;
 
-  const UserTile(
-      {super.key,
-      required this.user,
+  const _UserTile(
+      {required this.user,
       required this.permChanger,
       required this.me});
   @override

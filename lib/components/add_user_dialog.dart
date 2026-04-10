@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:orchastrator/classes/bindings.dart';
 import 'package:orchastrator/components/password_form_field.dart';
 
+/// dialog for adding a new user to a group when permissions are sufficient
 class AddUserDialog extends StatefulWidget {
   final Privilege privilege;
   const AddUserDialog({super.key, required this.privilege});
@@ -21,7 +22,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
       content: Form(
           key: _formKey,
           child: SizedBox(
-            height: 180,
+            height: 188,
             width: 300,
             child: Column(
               children: [

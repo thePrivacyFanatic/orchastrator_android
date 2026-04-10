@@ -1,7 +1,12 @@
+/// file for classes used inside objectives
+///
+/// bindings for classes in this file will be generated when the project switches over to dynamic code loading
+library;
 import 'dart:io';
 import 'dart:core';
 import 'package:flutter/material.dart';
 
+/// enum for extensibility in comparisons
 enum Privilege {
   banned,
   listener,
@@ -25,6 +30,7 @@ enum Privilege {
     return index <= other.index;
   }
 
+  /// list of dropdown menu entries for permission dropdowns
   static final List<DropdownMenuEntry<Privilege>> menuEntries = Privilege.values
       .map((Privilege v) => DropdownMenuEntry(value: v, label: v.name))
       .toList();
@@ -32,6 +38,7 @@ enum Privilege {
   int toJson() => index;
 }
 
+/// dataclass for messages with serialization and deserialization
 class Message {
   String content;
   final DateTime timestamp;
@@ -44,12 +51,14 @@ class Message {
       required this.sender,
       required this.mtype});
 
+  /// deserialization constructor for the class
   Message.fromJson(Map<String, dynamic> json)
       : content = json["content"],
         timestamp = DateTime.parse(json["timestamp"]),
         sender = json["sender"] as int,
         mtype = json["mtype"] as int;
 
+  /// serialization function for the class
   Map<String, dynamic> toJson() => {
         "content": content,
         "timestamp": timestamp.toString(),
@@ -63,6 +72,7 @@ class Message {
   }
 }
 
+/// dataclass for user data
 class User {
   final int uid;
   final String name;
@@ -79,6 +89,9 @@ class User {
       {"uid": uid, "name": name, "privilege": privilege};
 }
 
+/// dataclass for the data each objective receives
+///
+/// this is used only since it enhances extensibility as it implements no functionality
 class ObjectiveInput {
   final ValueNotifier<User> me;
   final Stream<Message> receiver;
@@ -86,7 +99,7 @@ class ObjectiveInput {
   final List<User> users;
   final File state;
 
-  ObjectiveInput(
+  const ObjectiveInput(
       {required this.receiver,
       required this.send,
       required this.users,
@@ -94,4 +107,5 @@ class ObjectiveInput {
       required this.me});
 }
 
+/// premade object that owns all system messages
 final systemUser = User(uid: 0, name: 'SYSTEM', privilege: Privilege.admin);

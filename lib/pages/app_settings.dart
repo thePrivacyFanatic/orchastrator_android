@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:orchastrator/globals/app_state.dart';
 
+/// settings page for app
+///
+/// accessed from the homepage and is only concerned with global settings
 class AppSettings extends StatelessWidget {
   const AppSettings({super.key});
 
@@ -114,24 +117,15 @@ class AppSettings extends StatelessWidget {
               children: [
                 ListTile(
                   leading: Icon(
-                    Icons.language,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  title: const Text('Language'),
-                  subtitle: const Text('English (US)'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: Icon(
                     Icons.info,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: const Text('About'),
                   subtitle: const Text('App version 1.0.0'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                  onTap: () => showAboutDialog(context: context,
+                  applicationName: "orchestrator",
+                  applicationVersion: "1.1"),
                 ),
               ],
             ),

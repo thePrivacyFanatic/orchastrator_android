@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// dialog for confirming group deletion
 class DeleteGroupDialog extends StatelessWidget {
   const DeleteGroupDialog({super.key});
 

@@ -6,6 +6,9 @@ import 'package:orchastrator/classes/group_details.dart';
 
 import 'add_group_steps.dart';
 
+/// multi step dialog for adding new groups to the app
+///
+/// the steps are stored in [add_group_steps.dart]
 class AddGroupDialog extends StatefulWidget {
   const AddGroupDialog({super.key});
 
@@ -21,23 +24,26 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
       passwordController = TextEditingController(),
       displayNameController = TextEditingController(),
       keyController = TextEditingController();
+  final encryptedNotifier = ValueNotifier(true);
 
   late List<Widget> containers = [
-    GroupForm(urlController: urlController, gidController: gidController),
+    GroupForm(urlController: urlController, gidController: gidController, encrypted: encryptedNotifier,),
     AccountForm(
         usernameController: nameController,
         passwordController: passwordController),
     KeyForm(nameController: displayNameController, keyController: keyController)
   ];
 
-  late final List<Step> _steps = containers.map((form) {
-    return Step(
-        content: Form(key: GlobalKey<FormState>(), child: form),
-        title: SizedBox.shrink());
-  }).toList();
+  late List<Step> _steps;
 
   @override
   Widget build(BuildContext context) {
+    _steps = containers.mapIndexed((index, form) {
+      return Step(
+          state: (_index < index) ? StepState.indexed : (_index == index) ? StepState.editing : StepState.complete,
+          content: Form(key: GlobalKey<FormState>(), child: form),
+          title: SizedBox.shrink());
+    }).toList();
     return PopScope(
       canPop: (_index == 0),
       onPopInvokedWithResult: (didPop, result) {
@@ -83,6 +89,7 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
     );
   }
 
+  /// procedure for when the continue key is pressed
   void advance() {
     if (((_steps.elementAt(_index).content.key as GlobalKey<FormState>)
         .currentState!
@@ -98,10 +105,11 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
             GroupDetails(
                 gid: gidController.text,
                 displayName: displayNameController.text,
-                relayURL: urlController.text,
+                relayHost: urlController.text,
                 username: nameController.text,
                 password: passwordController.text,
-                aesKey: keyController.text));
+                aesKey: keyController.text,
+                secure: encryptedNotifier.value));
       }
     }
   }

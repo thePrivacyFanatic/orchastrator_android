@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../classes/bindings.dart';
 
+/// the home page of the app
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 

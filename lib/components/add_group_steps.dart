@@ -5,14 +5,17 @@ import "package:mobile_scanner/mobile_scanner.dart";
 import 'package:orchastrator/components/password_form_field.dart';
 import 'package:string_validator/string_validator.dart';
 
+/// step collecting th basic reachability details
 class GroupForm extends StatelessWidget {
   final TextEditingController urlController;
   final TextEditingController gidController;
+  final ValueNotifier<bool> encrypted;
 
   const GroupForm({
     super.key,
     required this.urlController,
     required this.gidController,
+    required this.encrypted,
   });
 
   @override
@@ -62,12 +65,24 @@ class GroupForm extends StatelessWidget {
             return null;
           },
           controller: gidController,
-        )
+        ),
+        Row(
+          children: [
+            const Text("encrypted:"),
+            ValueListenableBuilder(
+              valueListenable: encrypted,
+              builder: (context, value, child) {
+                return Checkbox(value: value, onChanged: (v) => encrypted.value = v!, tristate: false,);
+              }
+            ),
+          ],
+        )  // just in case
       ],
     );
   }
 }
 
+/// step collecting the credentials
 class AccountForm extends StatelessWidget {
   final TextEditingController usernameController;
   final TextEditingController passwordController;
@@ -108,6 +123,7 @@ class AccountForm extends StatelessWidget {
   }
 }
 
+/// step collecting key and client side name
 class KeyForm extends StatefulWidget {
   final TextEditingController nameController;
   final TextEditingController keyController;

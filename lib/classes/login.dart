@@ -1,5 +1,6 @@
 import 'package:orchastrator/classes/group_details.dart';
 
+/// dataclass for creadetials sent to the server
 class Login {
   final String username;
   final String password;

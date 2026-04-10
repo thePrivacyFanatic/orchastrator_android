@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../pages/group_page.dart';
 
+/// widget handling loading the list of groups from the files
 class GroupList extends StatefulWidget {
   const GroupList({super.key});
 
@@ -15,7 +16,7 @@ class GroupList extends StatefulWidget {
 }
 
 class GroupListState extends State<GroupList> {
-  List<GroupItem> groups = [];
+  final List<_GroupItem> _groups = [];
 
   @override
   void initState() {
@@ -36,41 +37,42 @@ class GroupListState extends State<GroupList> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: groups.length,
+      itemCount: _groups.length,
       itemBuilder: (context, index) {
-        return groups[index];
+        return _groups[index];
       },
     );
   }
 
   Future<void> addGroup(Directory dir) async {
     var key = ValueKey(dir);
-    var item = GroupItem(
+    var item = _GroupItem(
         key: key,
         dir: dir,
         deleter: () {
           setState(() {
-            groups.removeWhere((group) => group.key == key);
+            _groups.removeWhere((group) => group.key == key);
           });
           dir.delete(recursive: true);
         });
     setState(() {
-      groups.add(item);
+      _groups.add(item);
     });
   }
 }
 
-class GroupItem extends StatefulWidget {
+/// widget for individual group items
+class _GroupItem extends StatefulWidget {
   final Directory dir;
   final VoidCallback deleter;
 
-  const GroupItem({super.key, required this.dir, required this.deleter});
+  const _GroupItem({super.key, required this.dir, required this.deleter});
 
   @override
-  State<GroupItem> createState() => _GroupItemState();
+  State<_GroupItem> createState() => _GroupItemState();
 }
 
-class _GroupItemState extends State<GroupItem> {
+class _GroupItemState extends State<_GroupItem> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -88,8 +90,8 @@ class _GroupItemState extends State<GroupItem> {
                     onTap: () => showDialog(
                             context: context,
                             builder: (context) => DeleteGroupDialog())
-                        .then((delete) => {if (delete) widget.deleter()}),
-                    child: Icon(Icons.delete))
+                        .then((delete) => {if (delete == true) widget.deleter()}),
+                    child: const ListTile(leading: Icon(Icons.delete), title: Text("delete"),))
               ];
             },
             icon: Icon(Icons.more_vert)),
