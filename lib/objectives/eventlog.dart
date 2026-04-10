@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:orchastrator/classes/bindings.dart';
 
+/// objective logging events
 class EventList extends StatefulWidget {
   final ObjectiveInput input;
 

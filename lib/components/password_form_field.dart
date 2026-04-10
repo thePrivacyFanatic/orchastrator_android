@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// form field with visibility toggle
 class PasswordFormField extends StatefulWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validator;

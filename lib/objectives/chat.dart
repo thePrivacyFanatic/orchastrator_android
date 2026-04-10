@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:orchastrator/classes/bindings.dart';
 
+/// objective implementing text chat
 class Chat extends StatefulWidget {
   final ObjectiveInput input;
   const Chat({super.key, required this.input});
@@ -23,9 +24,9 @@ class _ChatState extends State<Chat> {
     var stateFile = widget.input.state.readAsStringSync();
     messages.addAll(
         (jsonDecode((stateFile.isNotEmpty) ? stateFile : "[]") as List)
-            .map((m) => ChatMessage(message: Message.fromJson(m))));
+            .map((m) => ChatMessage(message: Message.fromJson(m), users: widget.input.users,)));
     widget.input.receiver.listen((message) {
-      var msgWidget = ChatMessage(message: message);
+      var msgWidget = ChatMessage(message: message, users: widget.input.users);
       setState(() => messages.add(msgWidget));
       if (_scrollController.position.extentAfter < 200) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -60,17 +61,12 @@ class _ChatState extends State<Chat> {
               children: [
                 (lastSent == null)
                     ? IconButton(
-                        onPressed: () {
-                          widget.input.send(_messageController.text);
-                          setState(() {
-                            lastSent = _messageController.text;
-                          });
-                          _messageController.clear();
-                        },
+                        onPressed: send,
                         icon: const Icon(Icons.send))
                     : CircularProgressIndicator(),
                 Expanded(
                   child: TextField(
+                    onEditingComplete: send,
                     controller: _messageController,
                   ),
                 ),
@@ -85,6 +81,15 @@ class _ChatState extends State<Chat> {
     );
   }
 
+  void send() {
+    widget.input.send(_messageController.text);
+    setState(() {
+      lastSent = _messageController.text;
+    });
+    _messageController.clear();
+
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -95,14 +100,15 @@ class _ChatState extends State<Chat> {
 
 class ChatMessage extends StatelessWidget {
   final Message message;
-  const ChatMessage({super.key, required this.message});
+  final List<User> users;
+  const ChatMessage({super.key, required this.message, required this.users});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       color: (message.mtype == 0) ? Theme.of(context).cardColor: Theme.of(context).highlightColor,
       child: ListTile(
-        leading: Text("${message.sender}"),
+        leading: Text(users[message.sender].name),
         title: Text(message.content),
         subtitle: Text("${message.timestamp}"),
       ),

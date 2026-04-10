@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:orchastrator/globals/themes.dart';
 import 'package:provider/provider.dart';
 
+/// global theme settings
 class AppState extends ChangeNotifier {
   AppState();
 
